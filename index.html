@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>F1 Krillion — Grand Prix Challenge</title>
+  <style>
+    :root {
+      --bg-asphalt: #101218;
+      --card-bg: rgba(26, 29, 38, 0.92);
+      --f1-red: #e10600;
+      --text-light: #f5f7fa;
+      --text-muted: #9ca3af;
+      --tier-common: #9ca3af;
+      --tier-uncommon: #facc15;
+      --tier-rare: #a855f7;
+      --tier-krillion: #22c55e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-asphalt);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 860px;
+      padding: 28px 20px;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* Start Screen */
+    .start-box {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .title {
+      font-size: clamp(2.5rem, 6vw, 3.6rem);
+      font-weight: 900;
+      color: var(--f1-red);
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--tier-uncommon);
+      letter-spacing: 2px;
+      margin-top: 6px;
+      margin-bottom: 32px;
+    }
+
+    .desc {
+      max-width: 500px;
+      margin: 0 auto 36px;
+      line-height: 1.65;
+      font-size: 1.05rem;
+    }
+
+    .desc .muted { color: var(--text-muted); font-size: 0.95rem; }
+
+    .btn-primary {
+      background: var(--f1-red);
+      color: #fff;
+      border: none;
+      padding: 14px 36px;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.15s;
+    }
+
+    .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .api-status {
+      margin-top: 18px;
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--text-muted);
+    }
+
+    /* Game Screen */
+    .hud {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hud-left { font-weight: 700; color: var(--text-muted); font-size: 0.95rem; }
+    .hud-right { display: flex; gap: 18px; align-items: center; font-weight: 700; }
+    .laps-label { color: var(--tier-uncommon); }
+    .timer-label { font-size: 1.15rem; min-width: 38px; text-align: right; }
+
+    .f1-lights {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .light {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #323642;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+
+    .light.on {
+      background: var(--f1-red);
+      box-shadow: 0 0 10px var(--f1-red);
+    }
+
+    .timer-bar-wrap {
+      width: 100%;
+      height: 8px;
+      background: #232630;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .timer-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: var(--f1-red);
+      transition: width 0.25s linear;
+    }
+
+    .game-body {
+      display: flex;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    /* Lap Gauge */
+    .lap-gauge {
+      width: 58px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      flex-shrink: 0;
+    }
+
+    .checkered {
+      width: 22px;
+      height: 10px;
+      background-image:
+        linear-gradient(45deg, #fff 25%, transparent 25%),
+        linear-gradient(-45deg, #fff 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #fff 75%),
+        linear-gradient(-45deg, transparent 75%, #fff 75%);
+      background-size: 10px 10px;
+      background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+      background-color: #000;
+      margin-bottom: 6px;
+    }
+
+    .gauge-track {
+      position: relative;
+      width: 12px;
+      flex: 1;
+      min-height: 280px;
+      background: rgba(38, 42, 54, 0.9);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .gauge-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(to top, var(--f1-red), var(--tier-krillion));
+      border-radius: 10px;
+      transition: height 0.5s ease;
+    }
+
+    .gauge-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Prompt Card */
+    .card {
+      flex: 1;
+      background: var(--card-bg);
+      border: 1.5px solid rgba(225, 6, 0, 0.45);
+      border-radius: 20px;
+      padding: 38px 30px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 360px;
+    }
+
+    .prompt-text {
+      font-size: clamp(1.25rem, 3vw, 1.6rem);
+      font-weight: 800;
+      margin-bottom: 28px;
+      line-height: 1.35;
+    }
+
+    .answer-input {
+      width: 100%;
+      max-width: 460px;
+      padding: 13px 16px;
+      font-size: 1.1rem;
+      background: var(--bg-asphalt);
+      color: var(--text-light);
+      border: 2px solid var(--text-muted);
+      border-radius: 8px;
+      outline: none;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .answer-input:focus { border-color: var(--tier-uncommon); }
+
+    .feedback {
+      margin-top: 18px;
+      font-weight: 700;
+      font-size: 1rem;
+      min-height: 24px;
+    }
+
+    .dym-btn {
+      display: none;
+      margin-top: 12px;
+      background: #282c3a;
+      color: var(--tier-uncommon);
+      border: 1px solid var(--tier-uncommon);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .dym-btn:hover { background: #34394b; }
+
+    /* Summary Screen */
+    .summary-header { text-align: center; margin-bottom: 20px; }
+    .summary-title { color: var(--f1-red); font-weight: 800; font-size: 1.3rem; letter-spacing: 1px; }
+    .final-score { color: var(--tier-uncommon); font-weight: 900; font-size: 2rem; margin-top: 6px; }
+
+    .summary-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 370px;
+      overflow-y: auto;
+      margin-bottom: 22px;
+      padding-right: 4px;
+    }
+
+    .summary-row {
+      background: #1a1d26;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .summary-q { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .summary-detail { font-size: 0.85rem; color: var(--text-muted); }
+    .summary-score { font-weight: 800; font-size: 0.9rem; white-space: nowrap; }
+    .summary-footer { text-align: center; }
+
+    @media (max-width: 600px) {
+      .lap-gauge { display: none; }
+      .card { padding: 26px 18px; }
+      .summary-row { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="app">
+    <!-- START SCREEN -->
+    <section id="start-screen" class="screen active">
+      <div class="start-box">
+        <div class="title">F1 KRILLION</div>
+        <div class="subtitle">THE FORMULA ONE GRAND PRIX CHALLENGE</div>
+        <div class="desc">
+          7 random F1 prompts per race. 25 seconds each.<br><br>
+          Obvious answers earn fewer laps.<br>
+          Rare deep cuts earn a <strong>Grand Slam (+10 Laps)</strong> toward a full <strong>70-Lap Race</strong>.<br><br>
+          <span class="muted">Wrong guesses don't end the round — keep guessing until you hit!</span>
+        </div>
+        <button id="start-btn" class="btn-primary">LIGHTS OUT</button>
+        <div id="api-status" class="api-status">Syncing full F1 history from Jolpica API...</div>
+      </div>
+    </section>
+
+    <!-- GAME SCREEN -->
+    <section id="game-screen" class="screen">
+      <div class="hud">
+        <div id="progress-label" class="hud-left">SECTOR 1 / 7</div>
+        <div class="f1-lights" id="f1-lights">
+          <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
+        </div>
+        <div class="hud-right">
+          <div id="laps-label" class="laps-label">LAPS: 0 / 70</div>
+          <div id="timer-label" class="timer-label">25s</div>
+        </div>
+      </div>
+
+      <div class="timer-bar-wrap">
+        <div id="timer-bar-fill" class="timer-bar-fill"></div>
+      </div>
+
+      <div class="game-body">
+        <div class="lap-gauge">
+          <div class="checkered"></div>
+          <div class="gauge-track">
+            <div id="gauge-fill" class="gauge-fill"></div>
+          </div>
+          <div class="gauge-label">L0</div>
+        </div>
+
+        <div class="card">
+          <div id="prompt-text" class="prompt-text">Prompt goes here</div>
+          <input id="answer-input" class="answer-input" type="text" placeholder="Type your F1 answer..." autocomplete="off" />
+          <button id="submit-btn" class="btn-primary">LOCK IN ANSWER</button>
+          <div id="feedback" class="feedback"></div>
+          <button id="dym-btn" class="dym-btn"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUMMARY SCREEN -->
+    <section id="summary-screen" class="screen">
+      <div class="summary-header">
+        <div class="summary-title">CHECKERED FLAG — RACE CLASSIFICATION</div>
+        <div id="final-score" class="final-score">TOTAL LAPS: 0 / 70</div>
+      </div>
+      <div id="summary-list" class="summary-list"></div>
+      <div class="summary-footer">
+        <button id="replay-btn" class="btn-primary">RACE AGAIN</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // --- Animated F1 Track Background ---
+    const canvas = document.getElementById("bg-canvas");
+    const ctx = canvas.getContext("2d");
+    let kerbOffset = 0;
+    const speedLines = Array.from({ length: 24 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      len: 30 + Math.random() * 75,
+      speed: 5 + Math.random() * 8
+    }));
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function animateBg() {
+      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      grad.addColorStop(0, "#161820");
+      grad.addColorStop(1, "#0b0c10");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "rgba(255,255,255,0.07)";
+      ctx.lineWidth = 2;
+      for (const l of speedLines) {
+        ctx.beginPath();
+        ctx.moveTo(l.x, l.y);
+        ctx.lineTo(l.x + l.len, l.y);
+        ctx.stroke();
+        l.x -= l.speed;
+        if (l.x + l.len < 0) {
+          l.x = canvas.width + Math.random() * 80;
+          l.y = Math.random() * canvas.height;
+        }
+      }
+
+      kerbOffset = (kerbOffset + 2) % 48;
+      const kerbW = 24, kerbH = 6;
+      for (let x = -48 + kerbOffset; x < canvas.width + 48; x += kerbW) {
+        const isRed = Math.floor((x - kerbOffset) / kerbW) % 2 === 0;
+        ctx.fillStyle = isRed ? "#e10600" : "#ebebeb";
+        ctx.fillRect(x, 0, kerbW, kerbH);
+        ctx.fillRect(x, canvas.height - kerbH, kerbW, kerbH);
+      }
+      requestAnimationFrame(animateBg);
+    }
+    animateBg();
+
+    // --- Game Constants & Helpers ---
+    const TIME_PER_PROMPT = 25;
+    const QUESTIONS_PER_RACE = 7;
+    const MAX_LAPS = 10;
+
+    const TIERS = {
+      COMMON:   { laps: 2,  name: "COMMON",        color: "#9ca3af" },
+      UNCOMMON: { laps: 5,  name: "UNCOMMON",      color: "#facc15" },
+      RARE:     { laps: 8,  name: "PURPLE SECTOR", color: "#a855f7" },
+      KRILLION: { laps: 10, name: "GRAND SLAM",    color: "#22c55e" }
+    };
+
+    function normalize(str) {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+
+    function levenshtein(a, b) {
+      let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+      let curr = new Array(b.length + 1);
+      for (let i = 1; i <= a.length; i++) {
+        curr[0] = i;
+        for (let j = 1; j <= b.length; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          curr[j] = Math.min(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
+        }
+        [prev, curr] = [curr, prev];
+      }
+      return prev[b.length];
+    }
+
+    class Prompt {
+      constructor(question, apiKey) {
+        this.question = question;
+        this.apiKey = apiKey;
+        this.lookup = new Map();
+        this.krillionAnswers = [];
+      }
+
+      add(tier, displayName, ...aliases) {
+        const match = { displayName, ...tier };
+        this.lookup.set(normalize(displayName), match);
+        for (const a of aliases) this.lookup.set(normalize(a), match);
+        if (tier.laps === MAX_LAPS) this.krillionAnswers.push(displayName);
+      }
+
+      addKrillionIfAbsent(displayName, ...aliases) {
+        const key = normalize(displayName);
+        if (!key || this.lookup.has(key)) return false;
+        const match = { displayName, ...TIERS.KRILLION };
+        this.lookup.set(key, match);
+        for (const a of aliases) {
+          const ak = normalize(a);
+          if (ak && !this.lookup.has(ak)) this.lookup.set(ak, match);
+        }
+        this.krillionAnswers.push(displayName);
+        return true;
+      }
+
+      evaluate(input) {
+        const clean = normalize(input);
+        if (!clean) return { status: "NONE" };
+        if (this.lookup.has(clean)) {
+          return { status: "ACCEPTED", match: this.lookup.get(clean), wasFuzzy: false };
+        }
+
+        let bestAuto = null, bestAutoDist = Infinity;
+        let bestSuggest = null, bestSuggestScore = Infinity;
+
+        for (const [candidate, match] of this.lookup.entries()) {
+          const dist = levenshtein(clean, candidate);
+          const autoLimit = candidate.length <= 3 ? 0 : candidate.length <= 6 ? 1 : candidate.length <= 10 ? 2 : 3;
+
+          if (autoLimit > 0 && dist <= autoLimit) {
+            if (dist < bestAutoDist || (dist === bestAutoDist && bestAuto && match.laps > bestAuto.laps)) {
+              bestAutoDist = dist;
+              bestAuto = match;
+            }
+            continue;
+          }
+
+          const suggestLimit = candidate.length <= 4 ? 1 : candidate.length <= 8 ? 2 : 4;
+          const isPartial = clean.length >= 4 && (candidate.startsWith(clean) || candidate.includes(clean));
+          if (dist <= suggestLimit || isPartial) {
+            const score = isPartial ? Math.min(dist, 2) : dist;
+            if (score < bestSuggestScore) {
+              bestSuggestScore = score;
+              bestSuggest = match;
+            }
+          }
+        }
+
+        if (bestAuto) return { status: "ACCEPTED", match: bestAuto, wasFuzzy: true };
+        if (bestSuggest) return { status: "SUGGESTION", match: bestSuggest, wasFuzzy: true };
+        return { status: "NONE" };
+      }
+
+      sampleKrillion() {
+        if (!this.krillionAnswers.length) return "—";
+        return this.krillionAnswers[Math.floor(Math.random() * this.krillionAnswers.length)];
+      }
+    }
+
+    function buildPromptPool() {
+      const pool = [];
+
+      const p1 = new Prompt("Name a Formula One World Champion", "champions");
+      [["Lewis Hamilton","Hamilton"],["Max Verstappen","Verstappen"],["Michael Schumacher","Schumacher"],["Ayrton Senna","Senna"],["Sebastian Vettel","Vettel"],["Fernando Alonso","Alonso"]].forEach(a => p1.add(TIERS.COMMON, ...a));
+      [["Niki Lauda","Lauda"],["Alain Prost","Prost"],["Kimi Raikkonen","Raikkonen","Kimi"],["Jenson Button","Button"],["Nico Rosberg","Rosberg"],["Mika Hakkinen","Hakkinen"],["Nigel Mansell","Mansell"]].forEach(a => p1.add(TIERS.UNCOMMON, ...a));
+      [["Jackie Stewart","Stewart"],["Jim Clark","Clark"],["Juan Manuel Fangio","Fangio"],["Emerson Fittipaldi","Fittipaldi"],["Mario Andretti","Andretti"],["James Hunt","Hunt"],["Jody Scheckter","Scheckter"]].forEach(a => p1.add(TIERS.RARE, ...a));
+      [["Jochen Rindt","Rindt"],["Mike Hawthorn","Hawthorn"],["Phil Hill"],["Denny Hulme","Hulme"],["Giuseppe Farina","Farina","Nino Farina"],["John Surtees","Surtees"]].forEach(a => p1.add(TIERS.KRILLION, ...a));
+      pool.push(p1);
+
+      const p2 = new Prompt("Name an F1 Constructor (past or present)", "constructors");
+      [["Ferrari","Scuderia Ferrari"],["Mercedes","Mercedes AMG"],["Red Bull","Red Bull Racing"],["McLaren"],["Williams"],["Aston Martin"],["Alpine"],["Haas"]].forEach(a => p2.add(TIERS.COMMON, ...a));
+      [["Sauber","Kick Sauber"],["Renault"],["Lotus"],["Brawn GP","Brawn"],["Force India"],["Toro Rosso","AlphaTauri","Racing Bulls"],["Jordan"],["Benetton"]].forEach(a => p2.add(TIERS.UNCOMMON, ...a));
+      [["Tyrrell"],["Brabham"],["Minardi"],["Arrows"],["Ligier"],["Jaguar"],["Toyota"]].forEach(a => p2.add(TIERS.RARE, ...a));
+      [["Andrea Moda"],["Super Aguri"],["Spyker"],["Simtek"]].forEach(a => p2.add(TIERS.KRILLION, ...a));
+      pool.push(p2);
+
+      const p3 = new Prompt("Name a country that has hosted an F1 Grand Prix", "countries");
+      [["Italy"],["United Kingdom","UK","Britain","England"],["Monaco"],["United States","USA","US"],["Spain"],["Australia"],["Japan"],["Brazil"],["Canada"],["Belgium"]].forEach(a => p3.add(TIERS.COMMON, ...a));
+      [["Austria"],["Netherlands","Holland"],["Hungary"],["Singapore"],["Bahrain"],["Saudi Arabia"],["Qatar"],["UAE","United Arab Emirates","Abu Dhabi"],["Mexico"],["France"],["Germany"],["China"],["Azerbaijan"]].forEach(a => p3.add(TIERS.UNCOMMON, ...a));
+      [["Portugal"],["Turkey"],["Malaysia"],["South Africa"],["Argentina"],["India"],["South Korea","Korea"]].forEach(a => p3.add(TIERS.RARE, ...a));
+      [["Morocco"],["Sweden"],["Switzerland"]].forEach(a => p3.add(TIERS.KRILLION, ...a));
+      pool.push(p3);
+
+      const p4 = new Prompt("Name a driver who has won the Monaco Grand Prix", "monaco");
+      [["Ayrton Senna","Senna"],["Lewis Hamilton","Hamilton"],["Max Verstappen","Verstappen"],["Charles Leclerc","Leclerc"],["Michael Schumacher","Schumacher"],["Daniel Ricciardo","Ricciardo"],["Sergio Perez","Perez","Checo"]].forEach(a => p4.add(TIERS.COMMON, ...a));
+      [["Fernando Alonso","Alonso"],["Sebastian Vettel","Vettel"],["Nico Rosberg","Rosberg"],["Kimi Raikkonen","Raikkonen"],["Jenson Button","Button"],["Mark Webber","Webber"],["Alain Prost","Prost"]].forEach(a => p4.add(TIERS.UNCOMMON, ...a));
+      [["David Coulthard","Coulthard"],["Juan Pablo Montoya","Montoya"],["Jarno Trulli","Trulli"],["Olivier Panis","Panis"]].forEach(a => p4.add(TIERS.RARE, ...a));
+      [["Jean-Pierre Beltoise","Beltoise"],["Maurice Trintignant","Trintignant"]].forEach(a => p4.add(TIERS.KRILLION, ...a));
+      pool.push(p4);
+
+      const p5 = new Prompt("Name an F1 Engine Supplier (past or present)", null);
+      [["Ferrari"],["Mercedes"],["Honda"],["Renault"],["Ford"]].forEach(a => p5.add(TIERS.COMMON, ...a));
+      [["Cosworth"],["BMW"],["Toyota"],["Porsche"],["Audi"],["Red Bull Powertrains","RBPT"]].forEach(a => p5.add(TIERS.UNCOMMON, ...a));
+      [["Yamaha"],["Peugeot"],["Judd"],["Ilmor"],["Lamborghini"],["Alfa Romeo"],["Mugen-Honda","Mugen"]].forEach(a => p5.add(TIERS.RARE, ...a));
+      [["Hart","Brian Hart"],["Megatron"],["Motori Moderni"],["Repco"],["Climax","Coventry Climax"],["Weslake"]].forEach(a => p5.add(TIERS.KRILLION, ...a));
+      pool.push(p5);
+
+      const p6 = new Prompt("Name a driver who has raced for Ferrari in F1", "ferrari");
+      [["Michael Schumacher","Schumacher"],["Charles Leclerc","Leclerc"],["Lewis Hamilton","Hamilton"],["Carlos Sainz","Sainz"],["Sebastian Vettel","Vettel"],["Kimi Raikkonen","Raikkonen"],["Fernando Alonso","Alonso"],["Niki Lauda","Lauda"]].forEach(a => p6.add(TIERS.COMMON, ...a));
+      [["Felipe Massa","Massa"],["Rubens Barrichello","Barrichello"],["Gilles Villeneuve","Villeneuve"],["Alain Prost","Prost"],["Nigel Mansell","Mansell"],["Jean Alesi","Alesi"],["Gerhard Berger","Berger"]].forEach(a => p6.add(TIERS.UNCOMMON, ...a));
+      [["Eddie Irvine","Irvine"],["Michele Alboreto","Alboreto"],["Didier Pironi","Pironi"],["Rene Arnoux","Arnoux"]].forEach(a => p6.add(TIERS.RARE, ...a));
+      [["Ivan Capelli","Capelli"],["Luca Badoer","Badoer"],["Oliver Bearman","Bearman"]].forEach(a => p6.add(TIERS.KRILLION, ...a));
+      pool.push(p6);
+
+      const p7 = new Prompt("Name an F1 Circuit (past or present)", "circuits");
+      [["Monza"],["Silverstone"],["Spa-Francorchamps","Spa"],["Monaco","Monte Carlo"],["Suzuka"],["Interlagos"],["Circuit of the Americas","COTA","Austin"],["Las Vegas"],["Miami"]].forEach(a => p7.add(TIERS.COMMON, ...a));
+      [["Imola"],["Red Bull Ring","Spielberg"],["Zandvoort"],["Hungaroring"],["Marina Bay","Singapore"],["Yas Marina","Abu Dhabi"],["Albert Park","Melbourne"],["Circuit Gilles Villeneuve","Montreal"],["Baku"],["Jeddah"],["Barcelona","Catalunya"],["Paul Ricard","Circuit Paul Ricard","Le Castellet"]].forEach(a => p7.add(TIERS.UNCOMMON, ...a));
+      [["Nurburgring"],["Hockenheim","Hockenheimring"],["Sepang"],["Istanbul Park"],["Portimao","Algarve"]].forEach(a => p7.add(TIERS.RARE, ...a));
+      [["Pescara"],["AVUS"],["Anderstorp"]].forEach(a => p7.add(TIERS.KRILLION, ...a));
+      pool.push(p7);
+
+      const p8 = new Prompt("Name a driver who has raced for McLaren in F1", "mclaren");
+      [["Lando Norris","Norris"],["Oscar Piastri","Piastri"],["Lewis Hamilton","Hamilton"],["Ayrton Senna","Senna"],["Fernando Alonso","Alonso"],["Daniel Ricciardo","Ricciardo"]].forEach(a => p8.add(TIERS.COMMON, ...a));
+      [["Alain Prost","Prost"],["Mika Hakkinen","Hakkinen"],["Kimi Raikkonen","Raikkonen"],["Jenson Button","Button"],["Niki Lauda","Lauda"],["Carlos Sainz","Sainz"],["David Coulthard","Coulthard"]].forEach(a => p8.add(TIERS.UNCOMMON, ...a));
+      [["James Hunt","Hunt"],["Emerson Fittipaldi","Fittipaldi"],["Juan Pablo Montoya","Montoya"],["Heikki Kovalainen","Kovalainen"]].forEach(a => p8.add(TIERS.RARE, ...a));
+      [["Stoffel Vandoorne","Vandoorne"],["Kevin Magnussen","Magnussen"],["Pedro de la Rosa","de la Rosa"]].forEach(a => p8.add(TIERS.KRILLION, ...a));
+      pool.push(p8);
+
+      const p9 = new Prompt("Name a driver who has raced for Red Bull Racing", "red_bull");
+      [["Max Verstappen","Verstappen"],["Sebastian Vettel","Vettel"],["Sergio Perez","Perez","Checo"],["Daniel Ricciardo","Ricciardo"]].forEach(a => p9.add(TIERS.COMMON, ...a));
+      [["Mark Webber","Webber"],["Pierre Gasly","Gasly"],["Alex Albon","Albon","Alexander Albon"],["David Coulthard","Coulthard"]].forEach(a => p9.add(TIERS.UNCOMMON, ...a));
+      [["Daniil Kvyat","Kvyat"],["Liam Lawson","Lawson"],["Yuki Tsunoda","Tsunoda"]].forEach(a => p9.add(TIERS.RARE, ...a));
+      [["Christian Klien","Klien"],["Vitantonio Liuzzi","Liuzzi"],["Robert Doornbos","Doornbos"]].forEach(a => p9.add(TIERS.KRILLION, ...a));
+      pool.push(p9);
+
+      const p10 = new Prompt("Name a driver who has raced for Mercedes in F1", "mercedes");
+      [["Lewis Hamilton","Hamilton"],["George Russell","Russell"],["Nico Rosberg","Rosberg"],["Valtteri Bottas","Bottas"],["Michael Schumacher","Schumacher"]].forEach(a => p10.add(TIERS.COMMON, ...a));
+      [["Kimi Antonelli","Antonelli","Andrea Kimi Antonelli"],["Juan Manuel Fangio","Fangio"]].forEach(a => p10.add(TIERS.UNCOMMON, ...a));
+      [["Stirling Moss","Moss"]].forEach(a => p10.add(TIERS.RARE, ...a));
+      [["Karl Kling","Kling"],["Hans Herrmann","Herrmann"],["Piero Taruffi","Taruffi"]].forEach(a => p10.add(TIERS.KRILLION, ...a));
+      pool.push(p10);
+
+      const p11 = new Prompt("Name a driver who has won at Monza (Italian GP)", "monza");
+      [["Lewis Hamilton","Hamilton"],["Michael Schumacher","Schumacher"],["Max Verstappen","Verstappen"],["Charles Leclerc","Leclerc"],["Sebastian Vettel","Vettel"]].forEach(a => p11.add(TIERS.COMMON, ...a));
+      [["Fernando Alonso","Alonso"],["Daniel Ricciardo","Ricciardo"],["Pierre Gasly","Gasly"],["Ayrton Senna","Senna"],["Alain Prost","Prost"]].forEach(a => p11.add(TIERS.UNCOMMON, ...a));
+      [["Rubens Barrichello","Barrichello"],["Juan Pablo Montoya","Montoya"],["Nico Rosberg","Rosberg"]].forEach(a => p11.add(TIERS.RARE, ...a));
+      [["Johnny Herbert","Herbert"],["Peter Gethin","Gethin"]].forEach(a => p11.add(TIERS.KRILLION, ...a));
+      pool.push(p11);
+
+      const p12 = new Prompt("Name a driver who has won at Silverstone (British GP)", "silverstone");
+      [["Lewis Hamilton","Hamilton"],["Max Verstappen","Verstappen"],["Michael Schumacher","Schumacher"],["Carlos Sainz","Sainz"],["Sebastian Vettel","Vettel"]].forEach(a => p12.add(TIERS.COMMON, ...a));
+      [["Fernando Alonso","Alonso"],["Nigel Mansell","Mansell"],["Alain Prost","Prost"],["Nico Rosberg","Rosberg"],["Mark Webber","Webber"]].forEach(a => p12.add(TIERS.UNCOMMON, ...a));
+      [["David Coulthard","Coulthard"],["Johnny Herbert","Herbert"],["Damon Hill"]].forEach(a => p12.add(TIERS.RARE, ...a));
+      [["Peter Revson","Revson"],["Jo Siffert","Siffert"]].forEach(a => p12.add(TIERS.KRILLION, ...a));
+      pool.push(p12);
+
+      return pool;
+    }
+
+    // --- Live Jolpica F1 API Sync ---
+    const promptPool = buildPromptPool();
+
+    async function syncJolpicaApi() {
+      const statusEl = document.getElementById("api-status");
+      const endpoints = {
+        champions:   { url: "https://api.jolpi.ca/ergast/f1/driverstandings/1.json?limit=100", type: "standings" },
+        constructors:{ url: "https://api.jolpi.ca/ergast/f1/constructors.json?limit=250", type: "constructors" },
+        circuits:    { url: "https://api.jolpi.ca/ergast/f1/circuits.json?limit=100", type: "circuits" },
+        countries:   { url: "https://api.jolpi.ca/ergast/f1/circuits.json?limit=100", type: "countries" },
+        monaco:      { url: "https://api.jolpi.ca/ergast/f1/circuits/monaco/results/1.json?limit=100", type: "raceWinners" },
+        monza:       { url: "https://api.jolpi.ca/ergast/f1/circuits/monza/results/1.json?limit=100", type: "raceWinners" },
+        silverstone: { url: "https://api.jolpi.ca/ergast/f1/circuits/silverstone/results/1.json?limit=100", type: "raceWinners" },
+        ferrari:     { url: "https://api.jolpi.ca/ergast/f1/constructors/ferrari/drivers.json?limit=150", type: "drivers" },
+        mclaren:     { url: "https://api.jolpi.ca/ergast/f1/constructors/mclaren/drivers.json?limit=150", type: "drivers" },
+        red_bull:    { url: "https://api.jolpi.ca/ergast/f1/constructors/red_bull/drivers.json?limit=100", type: "drivers" },
+        mercedes:    { url: "https://api.jolpi.ca/ergast/f1/constructors/mercedes/drivers.json?limit=100", type: "drivers" }
+      };
+
+      let added = 0;
+      await Promise.allSettled(Object.entries(endpoints).map(async ([key, cfg]) => {
+        try {
+          const res = await fetch(cfg.url);
+          if (!res.ok) return;
+          const json = await res.json();
+          const prompt = promptPool.find(p => p.apiKey === key);
+          if (!prompt) return;
+
+          if (cfg.type === "drivers") {
+            const list = json.MRData?.DriverTable?.Drivers || [];
+            list.forEach(d => { if (prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++; });
+          } else if (cfg.type === "constructors") {
+            const list = json.MRData?.ConstructorTable?.Constructors || [];
+            list.forEach(c => { if (prompt.addKrillionIfAbsent(c.name)) added++; });
+          } else if (cfg.type === "circuits") {
+            const list = json.MRData?.CircuitTable?.Circuits || [];
+            list.forEach(c => { if (prompt.addKrillionIfAbsent(c.circuitName, c.Location?.locality || "")) added++; });
+          } else if (cfg.type === "countries") {
+            const list = json.MRData?.CircuitTable?.Circuits || [];
+            list.forEach(c => { if (c.Location?.country && prompt.addKrillionIfAbsent(c.Location.country)) added++; });
+          } else if (cfg.type === "standings") {
+            const lists = json.MRData?.StandingsTable?.StandingsLists || [];
+            lists.forEach(sl => (sl.DriverStandings || []).forEach(ds => {
+              const d = ds.Driver;
+              if (d && prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
+            }));
+          } else if (cfg.type === "raceWinners") {
+            const races = json.MRData?.RaceTable?.Races || [];
+            races.forEach(r => (r.Results || []).forEach(resItem => {
+              const d = resItem.Driver;
+              if (d && prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
+            }));
+          }
+        } catch (_) {}
+      }));
+
+      if (added > 0) {
+        statusEl.style.color = "#22c55e";
+        statusEl.textContent = `Live F1 Database synced (+${added} historical entries loaded)`;
+      } else {
+        statusEl.textContent = "Offline mode — using built-in F1 database";
+      }
+    }
+    syncJolpicaApi();
+
+    // --- Game State & UI Logic ---
+    let activePrompts = [], results = [], currentIndex = 0, totalLaps = 0, timeLeft = TIME_PER_PROMPT, timerId = null;
+
+    const screens = {
+      start: document.getElementById("start-screen"),
+      game: document.getElementById("game-screen"),
+      summary: document.getElementById("summary-screen")
+    };
+    const progressLabel = document.getElementById("progress-label");
+    const lapsLabel = document.getElementById("laps-label");
+    const timerLabel = document.getElementById("timer-label");
+    const timerBarFill = document.getElementById("timer-bar-fill");
+    const gaugeFill = document.getElementById("gauge-fill");
+    const lights = Array.from(document.querySelectorAll("#f1-lights .light"));
+    const promptText = document.getElementById("prompt-text");
+    const answerInput = document.getElementById("answer-input");
+    const submitBtn = document.getElementById("submit-btn");
+    const feedbackEl = document.getElementById("feedback");
+    const dymBtn = document.getElementById("dym-btn");
+
+    function showScreen(name) {
+      Object.values(screens).forEach(s => s.classList.remove("active"));
+      screens[name].classList.add("active");
+    }
+
+    function setLights(count) {
+      lights.forEach((l, i) => l.classList.toggle("on", i < count));
+    }
+
+    function startGame() {
+      currentIndex = 0;
+      totalLaps = 0;
+      results = [];
+      activePrompts = [...promptPool].sort(() => Math.random() - 0.5).slice(0, QUESTIONS_PER_RACE);
+      gaugeFill.style.height = "0%";
+      showScreen("game");
+      loadPrompt();
+    }
+
+    function loadPrompt() {
+      if (currentIndex >= activePrompts.length) {
+        showSummary();
+        return;
+      }
+
+      const current = activePrompts[currentIndex];
+      const maxLaps = activePrompts.length * MAX_LAPS;
+      progressLabel.textContent = `SECTOR ${currentIndex + 1} / ${activePrompts.length}`;
+      lapsLabel.textContent = `LAPS: ${totalLaps} / ${maxLaps}`;
+      promptText.textContent = current.question;
+      answerInput.value = "";
+      answerInput.disabled = false;
+      answerInput.style.borderColor = "#9ca3af";
+      submitBtn.disabled = false;
+      feedbackEl.textContent = "";
+      dymBtn.style.display = "none";
+      answerInput.focus();
+
+      timeLeft = TIME_PER_PROMPT;
+      timerLabel.textContent = `${timeLeft}s`;
+      timerBarFill.style.width = "100%";
+      setLights(0);
+
+      clearInterval(timerId);
+      timerId = setInterval(() => {
+        timeLeft--;
+        timerLabel.textContent = `${timeLeft}s`;
+        timerBarFill.style.width = `${(timeLeft / TIME_PER_PROMPT) * 100}%`;
+
+        if (timeLeft <= 5 && timeLeft > 0) {
+          setLights(6 - timeLeft);
+        } else if (timeLeft <= 0) {
+          setLights(5);
+          clearInterval(timerId);
+          handleTimeout();
+        }
+      }, 1000);
+    }
+
+    function submitAnswer() {
+      if (answerInput.disabled) return;
+      const raw = answerInput.value.trim();
+      if (!raw) return;
+
+      const current = activePrompts[currentIndex];
+      const evalRes = current.evaluate(raw);
+
+      if (evalRes.status === "ACCEPTED") {
+        acceptAnswer(current, evalRes.match, evalRes.wasFuzzy);
+      } else {
+        answerInput.style.borderColor = "#e10600";
+        feedbackEl.style.color = "#e10600";
+        feedbackEl.textContent = "Not recognized — keep guessing!";
+        answerInput.select();
+        answerInput.focus();
+
+        if (evalRes.status === "SUGGESTION" && evalRes.match) {
+          const suggested = evalRes.match;
+          dymBtn.textContent = `Did you mean: ${suggested.displayName}? (Click to use)`;
+          dymBtn.onclick = () => { if (!answerInput.disabled) acceptAnswer(current, suggested, true); };
+          dymBtn.style.display = "inline-block";
+        } else {
+          dymBtn.style.display = "none";
+        }
+      }
+    }
+
+    function acceptAnswer(current, match, wasFuzzy) {
+      clearInterval(timerId);
+      answerInput.disabled = true;
+      submitBtn.disabled = true;
+      dymBtn.style.display = "none";
+      answerInput.style.borderColor = match.color;
+
+      totalLaps += match.laps;
+      const maxLaps = activePrompts.length * MAX_LAPS;
+      lapsLabel.textContent = `LAPS: ${totalLaps} / ${maxLaps}`;
+      gaugeFill.style.height = `${Math.min(100, (totalLaps / maxLaps) * 100)}%`;
+
+      feedbackEl.style.color = match.color;
+      const fuzzyNote = wasFuzzy ? " • typo fixed" : "";
+      feedbackEl.textContent = `+${match.laps} LAPS  •  ${match.name} (${match.displayName}${fuzzyNote})`;
+      results.push({
+        question: current.question,
+        userAnswer: match.displayName,
+        tier: match.name,
+        laps: match.laps,
+        color: match.color,
+        gem: current.sampleKrillion()
+      });
+
+      setTimeout(() => { currentIndex++; loadPrompt(); }, 1500);
+    }
+
+    function handleTimeout() {
+      answerInput.disabled = true;
+      submitBtn.disabled = true;
+      dymBtn.style.display = "none";
+      const current = activePrompts[currentIndex];
+      feedbackEl.style.color = "#e10600";
+      feedbackEl.textContent = "DNF (TIME'S UP)  •  +0 LAPS";
+      results.push({
+        question: current.question,
+        userAnswer: "No Answer",
+        tier: "DNF",
+        laps: 0,
+        color: "#e10600",
+        gem: current.sampleKrillion()
+      });
+      setTimeout(() => { currentIndex++; loadPrompt(); }, 1500);
+    }
+
+    function showSummary() {
+      const maxLaps = activePrompts.length * MAX_LAPS;
+      document.getElementById("final-score").textContent = `TOTAL LAPS: ${totalLaps} / ${maxLaps}`;
+      const listEl = document.getElementById("summary-list");
+      listEl.innerHTML = "";
+
+      for (const r of results) {
+        const row = document.createElement("div");
+        row.className = "summary-row";
+        row.innerHTML = `
+          <div>
+            <div class="summary-q">${r.question}</div>
+            <div class="summary-detail">Your pick: ${r.userAnswer} &nbsp;|&nbsp; Grand Slam gem: ${r.gem}</div>
+          </div>
+          <div class="summary-score" style="color:${r.color}">+${r.laps} LAPS (${r.tier})</div>
+        `;
+        listEl.appendChild(row);
+      }
+      showScreen("summary");
+    }
+
+    document.getElementById("start-btn").addEventListener("click", startGame);
+    document.getElementById("replay-btn").addEventListener("click", startGame);
+    submitBtn.addEventListener("click", submitAnswer);
+    answerInput.addEventListener("keydown", e => { if (e.key === "Enter") submitAnswer(); });
+  </script>
+</body>
+</html>
