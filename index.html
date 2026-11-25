@@ -11,10 +11,11 @@
       --f1-red: #e10600;
       --text-light: #f5f7fa;
       --text-muted: #9ca3af;
-      --tier-common: #9ca3af;
-      --tier-uncommon: #facc15;
-      --tier-rare: #a855f7;
-      --tier-krillion: #22c55e;
+      --tier-basic: #9ca3af;
+      --tier-rare: #38bdf8;
+      --tier-epic: #a855f7;
+      --tier-elite: #facc15;
+      --tier-grand-slam: #22c55e;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -52,7 +53,7 @@
     /* Start Screen */
     .start-box {
       text-align: center;
-      padding: 40px 20px;
+      padding: 36px 20px;
     }
 
     .title {
@@ -64,21 +65,39 @@
 
     .subtitle {
       font-size: 1rem;
-      font-weight: 700;
-      color: var(--tier-uncommon);
-      letter-spacing: 2px;
+      font-weight: 800;
+      color: var(--tier-elite);
+      letter-spacing: 2.5px;
       margin-top: 6px;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
 
     .desc {
-      max-width: 500px;
-      margin: 0 auto 36px;
-      line-height: 1.65;
-      font-size: 1.05rem;
+      max-width: 540px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+      font-size: 1.03rem;
     }
 
-    .desc .muted { color: var(--text-muted); font-size: 0.95rem; }
+    .desc .muted { color: var(--text-muted); font-size: 0.93rem; }
+
+    .tier-legend {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0 22px;
+    }
+
+    .tier-pill {
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid currentColor;
+      letter-spacing: 0.5px;
+    }
 
     .btn-primary {
       background: var(--f1-red);
@@ -115,7 +134,7 @@
 
     .hud-left { font-weight: 700; color: var(--text-muted); font-size: 0.95rem; }
     .hud-right { display: flex; gap: 18px; align-items: center; font-weight: 700; }
-    .laps-label { color: var(--tier-uncommon); }
+    .score-label { color: var(--tier-elite); }
     .timer-label { font-size: 1.15rem; min-width: 38px; text-align: right; }
 
     .f1-lights {
@@ -159,8 +178,8 @@
       align-items: stretch;
     }
 
-    /* Lap Gauge */
-    .lap-gauge {
+    /* Points Gauge */
+    .score-gauge {
       width: 58px;
       display: flex;
       flex-direction: column;
@@ -200,7 +219,7 @@
       left: 0;
       width: 100%;
       height: 0%;
-      background: linear-gradient(to top, var(--f1-red), var(--tier-krillion));
+      background: linear-gradient(to top, var(--f1-red), var(--tier-elite), var(--tier-grand-slam));
       border-radius: 10px;
       transition: height 0.5s ease;
     }
@@ -248,7 +267,7 @@
       text-align: center;
     }
 
-    .answer-input:focus { border-color: var(--tier-uncommon); }
+    .answer-input:focus { border-color: var(--tier-elite); }
 
     .feedback {
       margin-top: 18px;
@@ -261,8 +280,8 @@
       display: none;
       margin-top: 12px;
       background: #282c3a;
-      color: var(--tier-uncommon);
-      border: 1px solid var(--tier-uncommon);
+      color: var(--tier-elite);
+      border: 1px solid var(--tier-elite);
       padding: 8px 16px;
       border-radius: 6px;
       font-weight: 700;
@@ -275,7 +294,7 @@
     /* Summary Screen */
     .summary-header { text-align: center; margin-bottom: 20px; }
     .summary-title { color: var(--f1-red); font-weight: 800; font-size: 1.3rem; letter-spacing: 1px; }
-    .final-score { color: var(--tier-uncommon); font-weight: 900; font-size: 2rem; margin-top: 6px; }
+    .final-score { color: var(--tier-elite); font-weight: 900; font-size: 2rem; margin-top: 6px; }
 
     .summary-list {
       display: flex;
@@ -303,7 +322,7 @@
     .summary-footer { text-align: center; }
 
     @media (max-width: 600px) {
-      .lap-gauge { display: none; }
+      .score-gauge { display: none; }
       .card { padding: 26px 18px; }
       .summary-row { flex-direction: column; align-items: flex-start; }
     }
@@ -317,12 +336,21 @@
     <section id="start-screen" class="screen active">
       <div class="start-box">
         <div class="title">F1 KRILLION</div>
-        <div class="subtitle">THE FORMULA ONE GRAND PRIX CHALLENGE</div>
+        <div class="subtitle">LIGHTS OUT &amp; AWAY WE GO</div>
         <div class="desc">
-          7 random F1 prompts per race. 25 seconds each.<br><br>
-          Obvious answers earn fewer laps.<br>
-          Rare deep cuts earn a <strong>Grand Slam (+10 Laps)</strong> toward a full <strong>70-Lap Race</strong>.<br><br>
-          <span class="muted">Wrong guesses don't end the round — keep guessing until you hit!</span>
+          <strong>7 random sectors</strong> from Formula 1 history. <strong>25 seconds</strong> on the clock.<br>
+          Stay on the obvious racing line for low points, or dig deep into the paddock for bigger scores.
+          Every prompt hides just <strong>one Grand Slam</strong> answer—find it to chase a perfect <strong>700-point race</strong>.
+
+          <div class="tier-legend">
+            <span class="tier-pill" style="color: var(--tier-basic)">BASIC • 10</span>
+            <span class="tier-pill" style="color: var(--tier-rare)">RARE • 30</span>
+            <span class="tier-pill" style="color: var(--tier-epic)">EPIC • 60</span>
+            <span class="tier-pill" style="color: var(--tier-elite)">ELITE • 85</span>
+            <span class="tier-pill" style="color: var(--tier-grand-slam)">GRAND SLAM • 100</span>
+          </div>
+
+          <span class="muted">Miss the apex? Wrong guesses don't end the round—keep pushing until the clock runs dry.</span>
         </div>
         <button id="start-btn" class="btn-primary">LIGHTS OUT</button>
         <div id="api-status" class="api-status">Syncing full F1 history from Jolpica API...</div>
@@ -337,7 +365,7 @@
           <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
         </div>
         <div class="hud-right">
-          <div id="laps-label" class="laps-label">LAPS: 0 / 70</div>
+          <div id="score-label" class="score-label">PTS: 0 / 700</div>
           <div id="timer-label" class="timer-label">25s</div>
         </div>
       </div>
@@ -347,12 +375,12 @@
       </div>
 
       <div class="game-body">
-        <div class="lap-gauge">
+        <div class="score-gauge">
           <div class="checkered"></div>
           <div class="gauge-track">
             <div id="gauge-fill" class="gauge-fill"></div>
           </div>
-          <div class="gauge-label">L0</div>
+          <div class="gauge-label">0</div>
         </div>
 
         <div class="card">
@@ -369,7 +397,7 @@
     <section id="summary-screen" class="screen">
       <div class="summary-header">
         <div class="summary-title">CHECKERED FLAG — RACE CLASSIFICATION</div>
-        <div id="final-score" class="final-score">TOTAL LAPS: 0 / 70</div>
+        <div id="final-score" class="final-score">TOTAL SCORE: 0 / 700 PTS</div>
       </div>
       <div id="summary-list" class="summary-list"></div>
       <div class="summary-footer">
@@ -433,13 +461,14 @@
     // --- Game Constants & Helpers ---
     const TIME_PER_PROMPT = 25;
     const QUESTIONS_PER_RACE = 7;
-    const MAX_LAPS = 10;
+    const MAX_POINTS_PER_PROMPT = 100;
 
     const TIERS = {
-      COMMON:   { laps: 2,  name: "COMMON",        color: "#9ca3af" },
-      UNCOMMON: { laps: 5,  name: "UNCOMMON",      color: "#facc15" },
-      RARE:     { laps: 8,  name: "PURPLE SECTOR", color: "#a855f7" },
-      KRILLION: { laps: 10, name: "GRAND SLAM",    color: "#22c55e" }
+      BASIC:      { pts: 10,  name: "BASIC",      color: "#9ca3af" },
+      RARE:       { pts: 30,  name: "RARE",       color: "#38bdf8" },
+      EPIC:       { pts: 60,  name: "EPIC",       color: "#a855f7" },
+      ELITE:      { pts: 85,  name: "ELITE",      color: "#facc15" },
+      GRAND_SLAM: { pts: 100, name: "GRAND SLAM", color: "#22c55e" }
     };
 
     function normalize(str) {
@@ -465,26 +494,28 @@
         this.question = question;
         this.apiKey = apiKey;
         this.lookup = new Map();
-        this.krillionAnswers = [];
+        this.grandSlamAnswer = "—";
       }
 
       add(tier, displayName, ...aliases) {
         const match = { displayName, ...tier };
         this.lookup.set(normalize(displayName), match);
         for (const a of aliases) this.lookup.set(normalize(a), match);
-        if (tier.laps === MAX_LAPS) this.krillionAnswers.push(displayName);
+        if (tier.pts === MAX_POINTS_PER_PROMPT) {
+          this.grandSlamAnswer = displayName;
+        }
       }
 
-      addKrillionIfAbsent(displayName, ...aliases) {
+      // API-loaded deep cuts earn ELITE (85 pts) so the single Grand Slam stays 1-of-1
+      addEliteIfAbsent(displayName, ...aliases) {
         const key = normalize(displayName);
         if (!key || this.lookup.has(key)) return false;
-        const match = { displayName, ...TIERS.KRILLION };
+        const match = { displayName, ...TIERS.ELITE };
         this.lookup.set(key, match);
         for (const a of aliases) {
           const ak = normalize(a);
           if (ak && !this.lookup.has(ak)) this.lookup.set(ak, match);
         }
-        this.krillionAnswers.push(displayName);
         return true;
       }
 
@@ -503,7 +534,7 @@
           const autoLimit = candidate.length <= 3 ? 0 : candidate.length <= 6 ? 1 : candidate.length <= 10 ? 2 : 3;
 
           if (autoLimit > 0 && dist <= autoLimit) {
-            if (dist < bestAutoDist || (dist === bestAutoDist && bestAuto && match.laps > bestAuto.laps)) {
+            if (dist < bestAutoDist || (dist === bestAutoDist && bestAuto && match.pts > bestAuto.pts)) {
               bestAutoDist = dist;
               bestAuto = match;
             }
@@ -525,99 +556,173 @@
         if (bestSuggest) return { status: "SUGGESTION", match: bestSuggest, wasFuzzy: true };
         return { status: "NONE" };
       }
-
-      sampleKrillion() {
-        if (!this.krillionAnswers.length) return "—";
-        return this.krillionAnswers[Math.floor(Math.random() * this.krillionAnswers.length)];
-      }
     }
 
+    // --- 18-Question F1 Pool (Strictly 1 Grand Slam per prompt) ---
     function buildPromptPool() {
       const pool = [];
 
+      // 1. World Champions
       const p1 = new Prompt("Name a Formula One World Champion", "champions");
-      [["Lewis Hamilton","Hamilton"],["Max Verstappen","Verstappen"],["Michael Schumacher","Schumacher"],["Ayrton Senna","Senna"],["Sebastian Vettel","Vettel"],["Fernando Alonso","Alonso"]].forEach(a => p1.add(TIERS.COMMON, ...a));
-      [["Niki Lauda","Lauda"],["Alain Prost","Prost"],["Kimi Raikkonen","Raikkonen","Kimi"],["Jenson Button","Button"],["Nico Rosberg","Rosberg"],["Mika Hakkinen","Hakkinen"],["Nigel Mansell","Mansell"]].forEach(a => p1.add(TIERS.UNCOMMON, ...a));
-      [["Jackie Stewart","Stewart"],["Jim Clark","Clark"],["Juan Manuel Fangio","Fangio"],["Emerson Fittipaldi","Fittipaldi"],["Mario Andretti","Andretti"],["James Hunt","Hunt"],["Jody Scheckter","Scheckter"]].forEach(a => p1.add(TIERS.RARE, ...a));
-      [["Jochen Rindt","Rindt"],["Mike Hawthorn","Hawthorn"],["Phil Hill"],["Denny Hulme","Hulme"],["Giuseppe Farina","Farina","Nino Farina"],["John Surtees","Surtees"]].forEach(a => p1.add(TIERS.KRILLION, ...a));
+      [["Lewis Hamilton","Hamilton"],["Max Verstappen","Verstappen"],["Michael Schumacher","Schumacher"],["Ayrton Senna","Senna"],["Sebastian Vettel","Vettel"],["Fernando Alonso","Alonso"]].forEach(a => p1.add(TIERS.BASIC, ...a));
+      [["Niki Lauda","Lauda"],["Alain Prost","Prost"],["Kimi Raikkonen","Raikkonen","Kimi"],["Jenson Button","Button"],["Nico Rosberg","Rosberg"],["Mika Hakkinen","Hakkinen"],["Nigel Mansell","Mansell"]].forEach(a => p1.add(TIERS.RARE, ...a));
+      [["Jackie Stewart","Stewart"],["Jim Clark","Clark"],["Juan Manuel Fangio","Fangio"],["Emerson Fittipaldi","Fittipaldi"],["Mario Andretti","Andretti"],["James Hunt","Hunt"],["Damon Hill"],["Jacques Villeneuve","Villeneuve"]].forEach(a => p1.add(TIERS.EPIC, ...a));
+      [["Jody Scheckter","Scheckter"],["Jochen Rindt","Rindt"],["Mike Hawthorn","Hawthorn"],["Giuseppe Farina","Farina","Nino Farina"],["John Surtees","Surtees"],["Jack Brabham","Brabham"],["Graham Hill"],["Alberto Ascari","Ascari"],["Alan Jones","Jones"],["Keke Rosberg"],["Nelson Piquet","Piquet"]].forEach(a => p1.add(TIERS.ELITE, ...a));
+      p1.add(TIERS.GRAND_SLAM, "Denny Hulme", "Hulme");
       pool.push(p1);
 
+      // 2. Constructors
       const p2 = new Prompt("Name an F1 Constructor (past or present)", "constructors");
-      [["Ferrari","Scuderia Ferrari"],["Mercedes","Mercedes AMG"],["Red Bull","Red Bull Racing"],["McLaren"],["Williams"],["Aston Martin"],["Alpine"],["Haas"]].forEach(a => p2.add(TIERS.COMMON, ...a));
-      [["Sauber","Kick Sauber"],["Renault"],["Lotus"],["Brawn GP","Brawn"],["Force India"],["Toro Rosso","AlphaTauri","Racing Bulls"],["Jordan"],["Benetton"]].forEach(a => p2.add(TIERS.UNCOMMON, ...a));
-      [["Tyrrell"],["Brabham"],["Minardi"],["Arrows"],["Ligier"],["Jaguar"],["Toyota"]].forEach(a => p2.add(TIERS.RARE, ...a));
-      [["BRM","British Racing Motors"],["Cooper"],["Vanwall"],["Matra"],["Andrea Moda"],["Super Aguri"],["Spyker"],["Simtek"]].forEach(a => p2.add(TIERS.KRILLION, ...a));
+      [["Ferrari","Scuderia Ferrari"],["Mercedes","Mercedes AMG"],["Red Bull","Red Bull Racing"],["McLaren"],["Williams"],["Aston Martin"],["Alpine"],["Haas"]].forEach(a => p2.add(TIERS.BASIC, ...a));
+      [["Sauber","Kick Sauber"],["Renault"],["Lotus"],["Brawn GP","Brawn"],["Force India"],["Toro Rosso","AlphaTauri","Racing Bulls"],["Jordan"],["Benetton"]].forEach(a => p2.add(TIERS.RARE, ...a));
+      [["Tyrrell"],["Brabham"],["Minardi"],["Arrows"],["Ligier"],["Jaguar"],["Toyota"],["Honda"],["BMW Sauber"],["Alfa Romeo"]].forEach(a => p2.add(TIERS.EPIC, ...a));
+      [["BRM","British Racing Motors"],["Cooper"],["Vanwall"],["Matra"],["Super Aguri"],["Spyker"],["Simtek"],["Caterham"],["Marussia"],["HRT","Hispania"],["Hesketh"]].forEach(a => p2.add(TIERS.ELITE, ...a));
+      p2.add(TIERS.GRAND_SLAM, "Andrea Moda");
       pool.push(p2);
 
+      // 3. Host Countries
       const p3 = new Prompt("Name a country that has hosted an F1 Grand Prix", "countries");
-      [["Italy"],["United Kingdom","UK","Britain","England"],["Monaco"],["United States","USA","US"],["Spain"],["Australia"],["Japan"],["Brazil"],["Canada"],["Belgium"]].forEach(a => p3.add(TIERS.COMMON, ...a));
-      [["Austria"],["Netherlands","Holland"],["Hungary"],["Singapore"],["Bahrain"],["Saudi Arabia"],["Qatar"],["UAE","United Arab Emirates","Abu Dhabi"],["Mexico"],["France"],["Germany"],["China"],["Azerbaijan"]].forEach(a => p3.add(TIERS.UNCOMMON, ...a));
-      [["Portugal"],["Turkey"],["Malaysia"],["South Africa"],["Argentina"],["India"],["South Korea","Korea"]].forEach(a => p3.add(TIERS.RARE, ...a));
-      [["Morocco"],["Sweden"],["Switzerland"]].forEach(a => p3.add(TIERS.KRILLION, ...a));
+      [["Italy"],["United Kingdom","UK","Britain","England"],["Monaco"],["United States","USA","US"],["Spain"],["Australia"],["Japan"],["Brazil"],["Canada"],["Belgium"]].forEach(a => p3.add(TIERS.BASIC, ...a));
+      [["Austria"],["Netherlands","Holland"],["Hungary"],["Singapore"],["Bahrain"],["Saudi Arabia"],["Qatar"],["UAE","United Arab Emirates","Abu Dhabi"],["Mexico"],["France"],["Germany"],["China"],["Azerbaijan"]].forEach(a => p3.add(TIERS.RARE, ...a));
+      [["Portugal"],["Turkey"],["Malaysia"],["South Africa"],["Argentina"],["Russia"]].forEach(a => p3.add(TIERS.EPIC, ...a));
+      [["India"],["South Korea","Korea"],["Sweden"],["Switzerland"],["San Marino"],["Luxembourg"]].forEach(a => p3.add(TIERS.ELITE, ...a));
+      p3.add(TIERS.GRAND_SLAM, "Morocco");
       pool.push(p3);
 
+      // 4. Monaco GP Winners
       const p4 = new Prompt("Name a driver who has won the Monaco Grand Prix", "monaco");
-      [["Ayrton Senna","Senna"],["Lewis Hamilton","Hamilton"],["Max Verstappen","Verstappen"],["Charles Leclerc","Leclerc"],["Michael Schumacher","Schumacher"],["Daniel Ricciardo","Ricciardo"],["Sergio Perez","Perez","Checo"]].forEach(a => p4.add(TIERS.COMMON, ...a));
-      [["Fernando Alonso","Alonso"],["Sebastian Vettel","Vettel"],["Nico Rosberg","Rosberg"],["Kimi Raikkonen","Raikkonen"],["Jenson Button","Button"],["Mark Webber","Webber"],["Alain Prost","Prost"]].forEach(a => p4.add(TIERS.UNCOMMON, ...a));
-      [["David Coulthard","Coulthard"],["Juan Pablo Montoya","Montoya"],["Jarno Trulli","Trulli"],["Olivier Panis","Panis"]].forEach(a => p4.add(TIERS.RARE, ...a));
-      [["Jean-Pierre Beltoise","Beltoise"],["Maurice Trintignant","Trintignant"]].forEach(a => p4.add(TIERS.KRILLION, ...a));
+      [["Ayrton Senna","Senna"],["Lewis Hamilton","Hamilton"],["Max Verstappen","Verstappen"],["Charles Leclerc","Leclerc"],["Michael Schumacher","Schumacher"],["Daniel Ricciardo","Ricciardo"],["Sergio Perez","Perez","Checo"]].forEach(a => p4.add(TIERS.BASIC, ...a));
+      [["Fernando Alonso","Alonso"],["Sebastian Vettel","Vettel"],["Nico Rosberg","Rosberg"],["Kimi Raikkonen","Raikkonen"],["Jenson Button","Button"],["Mark Webber","Webber"],["Alain Prost","Prost"],["Niki Lauda","Lauda"]].forEach(a => p4.add(TIERS.RARE, ...a));
+      [["David Coulthard","Coulthard"],["Juan Pablo Montoya","Montoya"],["Jarno Trulli","Trulli"],["Gilles Villeneuve","Villeneuve"],["Stirling Moss","Moss"],["Graham Hill"]].forEach(a => p4.add(TIERS.EPIC, ...a));
+      [["Olivier Panis","Panis"],["Maurice Trintignant","Trintignant"],["Patrick Depailler","Depailler"],["Riccardo Patrese","Patrese"],["Jody Scheckter","Scheckter"]].forEach(a => p4.add(TIERS.ELITE, ...a));
+      p4.add(TIERS.GRAND_SLAM, "Jean-Pierre Beltoise", "Beltoise");
       pool.push(p4);
 
+      // 5. Engine Suppliers
       const p5 = new Prompt("Name an F1 Engine Supplier (past or present)", null);
-      [["Ferrari"],["Mercedes"],["Honda"],["Renault"],["Ford"]].forEach(a => p5.add(TIERS.COMMON, ...a));
-      [["Cosworth"],["BMW"],["Toyota"],["Porsche"],["Audi"],["Red Bull Powertrains","RBPT"]].forEach(a => p5.add(TIERS.UNCOMMON, ...a));
-      [["Yamaha"],["Peugeot"],["Judd"],["Ilmor"],["Lamborghini"],["Alfa Romeo"],["Mugen-Honda","Mugen"]].forEach(a => p5.add(TIERS.RARE, ...a));
-      [["Hart","Brian Hart"],["Megatron"],["Motori Moderni"],["Repco"],["Climax","Coventry Climax"],["Weslake"],["BRM"]].forEach(a => p5.add(TIERS.KRILLION, ...a));
+      [["Ferrari"],["Mercedes"],["Honda"],["Renault"],["Ford"]].forEach(a => p5.add(TIERS.BASIC, ...a));
+      [["Cosworth"],["BMW"],["Toyota"],["Porsche"],["Audi"],["Red Bull Powertrains","RBPT"]].forEach(a => p5.add(TIERS.RARE, ...a));
+      [["Yamaha"],["Peugeot"],["Judd"],["Ilmor"],["Lamborghini"],["Alfa Romeo"],["Mugen-Honda","Mugen"]].forEach(a => p5.add(TIERS.EPIC, ...a));
+      [["Hart","Brian Hart"],["Megatron"],["Repco"],["Climax","Coventry Climax"],["Weslake"],["BRM"],["Supertec"],["Mecachrome"],["Petronas"]].forEach(a => p5.add(TIERS.ELITE, ...a));
+      p5.add(TIERS.GRAND_SLAM, "Motori Moderni");
       pool.push(p5);
 
+      // 6. Ferrari Drivers
       const p6 = new Prompt("Name a driver who has raced for Ferrari in F1", "ferrari");
-      [["Michael Schumacher","Schumacher"],["Charles Leclerc","Leclerc"],["Lewis Hamilton","Hamilton"],["Carlos Sainz","Sainz"],["Sebastian Vettel","Vettel"],["Kimi Raikkonen","Raikkonen"],["Fernando Alonso","Alonso"],["Niki Lauda","Lauda"]].forEach(a => p6.add(TIERS.COMMON, ...a));
-      [["Felipe Massa","Massa"],["Rubens Barrichello","Barrichello"],["Gilles Villeneuve","Villeneuve"],["Alain Prost","Prost"],["Nigel Mansell","Mansell"],["Jean Alesi","Alesi"],["Gerhard Berger","Berger"]].forEach(a => p6.add(TIERS.UNCOMMON, ...a));
-      [["Eddie Irvine","Irvine"],["Michele Alboreto","Alboreto"],["Didier Pironi","Pironi"],["Rene Arnoux","Arnoux"]].forEach(a => p6.add(TIERS.RARE, ...a));
-      [["Ivan Capelli","Capelli"],["Luca Badoer","Badoer"],["Oliver Bearman","Bearman"]].forEach(a => p6.add(TIERS.KRILLION, ...a));
+      [["Michael Schumacher","Schumacher"],["Charles Leclerc","Leclerc"],["Lewis Hamilton","Hamilton"],["Carlos Sainz","Sainz"],["Sebastian Vettel","Vettel"],["Kimi Raikkonen","Raikkonen"],["Fernando Alonso","Alonso"],["Niki Lauda","Lauda"]].forEach(a => p6.add(TIERS.BASIC, ...a));
+      [["Felipe Massa","Massa"],["Rubens Barrichello","Barrichello"],["Gilles Villeneuve","Villeneuve"],["Alain Prost","Prost"],["Nigel Mansell","Mansell"],["Jean Alesi","Alesi"],["Gerhard Berger","Berger"]].forEach(a => p6.add(TIERS.RARE, ...a));
+      [["Eddie Irvine","Irvine"],["Michele Alboreto","Alboreto"],["Didier Pironi","Pironi"],["Rene Arnoux","Arnoux"],["Jody Scheckter","Scheckter"],["Clay Regazzoni","Regazzoni"],["Oliver Bearman","Bearman"]].forEach(a => p6.add(TIERS.EPIC, ...a));
+      [["Ivan Capelli","Capelli"],["Luca Badoer","Badoer"],["Nicola Larini","Larini"],["Giancarlo Fisichella","Fisichella"],["Mika Salo","Salo"],["Stefan Johansson","Johansson"]].forEach(a => p6.add(TIERS.ELITE, ...a));
+      p6.add(TIERS.GRAND_SLAM, "Gianni Morbidelli", "Morbidelli");
       pool.push(p6);
 
+      // 7. F1 Circuits
       const p7 = new Prompt("Name an F1 Circuit (past or present)", "circuits");
-      [["Monza"],["Silverstone"],["Spa-Francorchamps","Spa"],["Monaco","Monte Carlo"],["Suzuka"],["Interlagos"],["Circuit of the Americas","COTA","Austin"],["Las Vegas"],["Miami"]].forEach(a => p7.add(TIERS.COMMON, ...a));
-      [["Imola"],["Red Bull Ring","Spielberg"],["Zandvoort"],["Hungaroring"],["Marina Bay","Singapore"],["Yas Marina","Abu Dhabi"],["Albert Park","Melbourne"],["Circuit Gilles Villeneuve","Montreal"],["Baku"],["Jeddah"],["Barcelona","Catalunya"],["Paul Ricard","Circuit Paul Ricard","Le Castellet"]].forEach(a => p7.add(TIERS.UNCOMMON, ...a));
-      [["Nurburgring"],["Hockenheim","Hockenheimring"],["Sepang"],["Istanbul Park"],["Portimao","Algarve"]].forEach(a => p7.add(TIERS.RARE, ...a));
-      [["Pescara"],["AVUS"],["Anderstorp"]].forEach(a => p7.add(TIERS.KRILLION, ...a));
+      [["Monza"],["Silverstone"],["Spa-Francorchamps","Spa"],["Monaco","Monte Carlo"],["Suzuka"],["Interlagos"],["Circuit of the Americas","COTA","Austin"],["Las Vegas"],["Miami"]].forEach(a => p7.add(TIERS.BASIC, ...a));
+      [["Imola"],["Red Bull Ring","Spielberg"],["Zandvoort"],["Hungaroring"],["Marina Bay","Singapore"],["Yas Marina","Abu Dhabi"],["Albert Park","Melbourne"],["Circuit Gilles Villeneuve","Montreal"],["Baku"],["Jeddah"],["Barcelona","Catalunya"],["Paul Ricard","Circuit Paul Ricard","Le Castellet"]].forEach(a => p7.add(TIERS.RARE, ...a));
+      [["Nurburgring"],["Hockenheim","Hockenheimring"],["Sepang"],["Istanbul Park"],["Portimao","Algarve"],["Mugello"],["Kyalami"],["Fuji"],["Adelaide"],["Magny-Cours"]].forEach(a => p7.add(TIERS.EPIC, ...a));
+      [["AVUS"],["Anderstorp"],["Zolder"],["Montjuic"],["Caesars Palace"],["Buddh","Buddh International Circuit"],["Watkins Glen"],["Brands Hatch"],["Estoril"]].forEach(a => p7.add(TIERS.ELITE, ...a));
+      p7.add(TIERS.GRAND_SLAM, "Pescara");
       pool.push(p7);
 
+      // 8. McLaren Drivers
       const p8 = new Prompt("Name a driver who has raced for McLaren in F1", "mclaren");
-      [["Lando Norris","Norris"],["Oscar Piastri","Piastri"],["Lewis Hamilton","Hamilton"],["Ayrton Senna","Senna"],["Fernando Alonso","Alonso"],["Daniel Ricciardo","Ricciardo"]].forEach(a => p8.add(TIERS.COMMON, ...a));
-      [["Alain Prost","Prost"],["Mika Hakkinen","Hakkinen"],["Kimi Raikkonen","Raikkonen"],["Jenson Button","Button"],["Niki Lauda","Lauda"],["Carlos Sainz","Sainz"],["David Coulthard","Coulthard"]].forEach(a => p8.add(TIERS.UNCOMMON, ...a));
-      [["James Hunt","Hunt"],["Emerson Fittipaldi","Fittipaldi"],["Juan Pablo Montoya","Montoya"],["Heikki Kovalainen","Kovalainen"]].forEach(a => p8.add(TIERS.RARE, ...a));
-      [["Stoffel Vandoorne","Vandoorne"],["Kevin Magnussen","Magnussen"],["Pedro de la Rosa","de la Rosa"]].forEach(a => p8.add(TIERS.KRILLION, ...a));
+      [["Lando Norris","Norris"],["Oscar Piastri","Piastri"],["Lewis Hamilton","Hamilton"],["Ayrton Senna","Senna"],["Fernando Alonso","Alonso"],["Daniel Ricciardo","Ricciardo"]].forEach(a => p8.add(TIERS.BASIC, ...a));
+      [["Alain Prost","Prost"],["Mika Hakkinen","Hakkinen"],["Kimi Raikkonen","Raikkonen"],["Jenson Button","Button"],["Niki Lauda","Lauda"],["Carlos Sainz","Sainz"],["David Coulthard","Coulthard"]].forEach(a => p8.add(TIERS.RARE, ...a));
+      [["James Hunt","Hunt"],["Emerson Fittipaldi","Fittipaldi"],["Juan Pablo Montoya","Montoya"],["Heikki Kovalainen","Kovalainen"],["Sergio Perez","Perez"],["Kevin Magnussen","Magnussen"]].forEach(a => p8.add(TIERS.EPIC, ...a));
+      [["Stoffel Vandoorne","Vandoorne"],["Pedro de la Rosa","de la Rosa"],["Martin Brundle","Brundle"],["Stefan Johansson","Johansson"],["Keke Rosberg"]].forEach(a => p8.add(TIERS.ELITE, ...a));
+      p8.add(TIERS.GRAND_SLAM, "Jan Magnussen");
       pool.push(p8);
 
+      // 9. Red Bull Racing Drivers
       const p9 = new Prompt("Name a driver who has raced for Red Bull Racing", "red_bull");
-      [["Max Verstappen","Verstappen"],["Sebastian Vettel","Vettel"],["Sergio Perez","Perez","Checo"],["Daniel Ricciardo","Ricciardo"]].forEach(a => p9.add(TIERS.COMMON, ...a));
-      [["Mark Webber","Webber"],["Pierre Gasly","Gasly"],["Alex Albon","Albon","Alexander Albon"],["David Coulthard","Coulthard"]].forEach(a => p9.add(TIERS.UNCOMMON, ...a));
-      [["Daniil Kvyat","Kvyat"],["Liam Lawson","Lawson"],["Yuki Tsunoda","Tsunoda"]].forEach(a => p9.add(TIERS.RARE, ...a));
-      [["Christian Klien","Klien"],["Vitantonio Liuzzi","Liuzzi"],["Robert Doornbos","Doornbos"]].forEach(a => p9.add(TIERS.KRILLION, ...a));
+      [["Max Verstappen","Verstappen"],["Sebastian Vettel","Vettel"],["Sergio Perez","Perez","Checo"],["Daniel Ricciardo","Ricciardo"]].forEach(a => p9.add(TIERS.BASIC, ...a));
+      [["Mark Webber","Webber"],["Pierre Gasly","Gasly"],["Alex Albon","Albon","Alexander Albon"],["David Coulthard","Coulthard"]].forEach(a => p9.add(TIERS.RARE, ...a));
+      [["Daniil Kvyat","Kvyat"],["Liam Lawson","Lawson"],["Yuki Tsunoda","Tsunoda"]].forEach(a => p9.add(TIERS.EPIC, ...a));
+      [["Christian Klien","Klien"],["Vitantonio Liuzzi","Liuzzi"]].forEach(a => p9.add(TIERS.ELITE, ...a));
+      p9.add(TIERS.GRAND_SLAM, "Robert Doornbos", "Doornbos");
       pool.push(p9);
 
+      // 10. Mercedes Drivers
       const p10 = new Prompt("Name a driver who has raced for Mercedes in F1", "mercedes");
-      [["Lewis Hamilton","Hamilton"],["George Russell","Russell"],["Nico Rosberg","Rosberg"],["Valtteri Bottas","Bottas"],["Michael Schumacher","Schumacher"]].forEach(a => p10.add(TIERS.COMMON, ...a));
-      [["Kimi Antonelli","Antonelli","Andrea Kimi Antonelli"],["Juan Manuel Fangio","Fangio"]].forEach(a => p10.add(TIERS.UNCOMMON, ...a));
-      [["Stirling Moss","Moss"]].forEach(a => p10.add(TIERS.RARE, ...a));
-      [["Karl Kling","Kling"],["Hans Herrmann","Herrmann"],["Piero Taruffi","Taruffi"]].forEach(a => p10.add(TIERS.KRILLION, ...a));
+      [["Lewis Hamilton","Hamilton"],["George Russell","Russell"],["Nico Rosberg","Rosberg"],["Valtteri Bottas","Bottas"],["Michael Schumacher","Schumacher"]].forEach(a => p10.add(TIERS.BASIC, ...a));
+      [["Kimi Antonelli","Antonelli","Andrea Kimi Antonelli"],["Juan Manuel Fangio","Fangio"]].forEach(a => p10.add(TIERS.RARE, ...a));
+      [["Stirling Moss","Moss"]].forEach(a => p10.add(TIERS.EPIC, ...a));
+      [["Karl Kling","Kling"],["Hans Herrmann","Herrmann"],["Piero Taruffi","Taruffi"]].forEach(a => p10.add(TIERS.ELITE, ...a));
+      p10.add(TIERS.GRAND_SLAM, "Andre Simon", "Simon");
       pool.push(p10);
 
+      // 11. Monza Winners
       const p11 = new Prompt("Name a driver who has won at Monza (Italian GP)", "monza");
-      [["Lewis Hamilton","Hamilton"],["Michael Schumacher","Schumacher"],["Max Verstappen","Verstappen"],["Charles Leclerc","Leclerc"],["Sebastian Vettel","Vettel"]].forEach(a => p11.add(TIERS.COMMON, ...a));
-      [["Fernando Alonso","Alonso"],["Daniel Ricciardo","Ricciardo"],["Pierre Gasly","Gasly"],["Ayrton Senna","Senna"],["Alain Prost","Prost"]].forEach(a => p11.add(TIERS.UNCOMMON, ...a));
-      [["Rubens Barrichello","Barrichello"],["Juan Pablo Montoya","Montoya"],["Nico Rosberg","Rosberg"]].forEach(a => p11.add(TIERS.RARE, ...a));
-      [["Johnny Herbert","Herbert"],["Peter Gethin","Gethin"]].forEach(a => p11.add(TIERS.KRILLION, ...a));
+      [["Lewis Hamilton","Hamilton"],["Michael Schumacher","Schumacher"],["Max Verstappen","Verstappen"],["Charles Leclerc","Leclerc"],["Sebastian Vettel","Vettel"]].forEach(a => p11.add(TIERS.BASIC, ...a));
+      [["Fernando Alonso","Alonso"],["Daniel Ricciardo","Ricciardo"],["Pierre Gasly","Gasly"],["Ayrton Senna","Senna"],["Alain Prost","Prost"]].forEach(a => p11.add(TIERS.RARE, ...a));
+      [["Rubens Barrichello","Barrichello"],["Juan Pablo Montoya","Montoya"],["Nico Rosberg","Rosberg"],["Damon Hill"],["Gerhard Berger","Berger"]].forEach(a => p11.add(TIERS.EPIC, ...a));
+      [["Johnny Herbert","Herbert"],["Nelson Piquet","Piquet"],["Ronnie Peterson","Peterson"],["Clay Regazzoni","Regazzoni"]].forEach(a => p11.add(TIERS.ELITE, ...a));
+      p11.add(TIERS.GRAND_SLAM, "Peter Gethin", "Gethin");
       pool.push(p11);
 
+      // 12. Silverstone Winners
       const p12 = new Prompt("Name a driver who has won at Silverstone (British GP)", "silverstone");
-      [["Lewis Hamilton","Hamilton"],["Max Verstappen","Verstappen"],["Michael Schumacher","Schumacher"],["Carlos Sainz","Sainz"],["Sebastian Vettel","Vettel"]].forEach(a => p12.add(TIERS.COMMON, ...a));
-      [["Fernando Alonso","Alonso"],["Nigel Mansell","Mansell"],["Alain Prost","Prost"],["Nico Rosberg","Rosberg"],["Mark Webber","Webber"]].forEach(a => p12.add(TIERS.UNCOMMON, ...a));
-      [["David Coulthard","Coulthard"],["Johnny Herbert","Herbert"],["Damon Hill"]].forEach(a => p12.add(TIERS.RARE, ...a));
-      [["Peter Revson","Revson"],["Jo Siffert","Siffert"]].forEach(a => p12.add(TIERS.KRILLION, ...a));
+      [["Lewis Hamilton","Hamilton"],["Max Verstappen","Verstappen"],["Michael Schumacher","Schumacher"],["Carlos Sainz","Sainz"],["Sebastian Vettel","Vettel"]].forEach(a => p12.add(TIERS.BASIC, ...a));
+      [["Fernando Alonso","Alonso"],["Nigel Mansell","Mansell"],["Alain Prost","Prost"],["Nico Rosberg","Rosberg"],["Mark Webber","Webber"],["Kimi Raikkonen","Raikkonen"]].forEach(a => p12.add(TIERS.RARE, ...a));
+      [["David Coulthard","Coulthard"],["Rubens Barrichello","Barrichello"],["Juan Pablo Montoya","Montoya"],["Damon Hill"],["Mika Hakkinen","Hakkinen"]].forEach(a => p12.add(TIERS.EPIC, ...a));
+      [["Johnny Herbert","Herbert"],["Jacques Villeneuve","Villeneuve"],["Jim Clark","Clark"],["Jackie Stewart","Stewart"],["Jo Siffert","Siffert"]].forEach(a => p12.add(TIERS.ELITE, ...a));
+      p12.add(TIERS.GRAND_SLAM, "Peter Revson", "Revson");
       pool.push(p12);
+
+      // 13. Williams Drivers
+      const p13 = new Prompt("Name a driver who has raced for Williams in F1", "williams");
+      [["Alex Albon","Albon"],["Carlos Sainz","Sainz"],["George Russell","Russell"],["Ayrton Senna","Senna"],["Nigel Mansell","Mansell"],["Valtteri Bottas","Bottas"]].forEach(a => p13.add(TIERS.BASIC, ...a));
+      [["Nicholas Latifi","Latifi"],["Logan Sargeant","Sargeant"],["Franco Colapinto","Colapinto"],["Felipe Massa","Massa"],["Nico Rosberg","Rosberg"],["Damon Hill"],["Alain Prost","Prost"],["Jenson Button","Button"]].forEach(a => p13.add(TIERS.RARE, ...a));
+      [["Jacques Villeneuve","Villeneuve"],["Juan Pablo Montoya","Montoya"],["Ralf Schumacher"],["Pastor Maldonado","Maldonado"],["Mark Webber","Webber"],["Lance Stroll","Stroll"],["Robert Kubica","Kubica"],["Rubens Barrichello","Barrichello"]].forEach(a => p13.add(TIERS.EPIC, ...a));
+      [["Alan Jones","Jones"],["Keke Rosberg"],["Nelson Piquet","Piquet"],["Riccardo Patrese","Patrese"],["Nico Hulkenberg","Hulkenberg"],["Bruno Senna"],["Kazuki Nakajima","Nakajima"],["Sergey Sirotkin","Sirotkin"]].forEach(a => p13.add(TIERS.ELITE, ...a));
+      p13.add(TIERS.GRAND_SLAM, "Antonio Pizzonia", "Pizzonia");
+      pool.push(p13);
+
+      // 14. Spa-Francorchamps Winners
+      const p14 = new Prompt("Name a driver who has won at Spa (Belgian GP)", "spa");
+      [["Lewis Hamilton","Hamilton"],["Max Verstappen","Verstappen"],["Michael Schumacher","Schumacher"],["Ayrton Senna","Senna"],["Charles Leclerc","Leclerc"],["Sebastian Vettel","Vettel"]].forEach(a => p14.add(TIERS.BASIC, ...a));
+      [["Kimi Raikkonen","Raikkonen"],["Daniel Ricciardo","Ricciardo"],["Nico Rosberg","Rosberg"],["Jenson Button","Button"],["Alain Prost","Prost"],["Mika Hakkinen","Hakkinen"]].forEach(a => p14.add(TIERS.RARE, ...a));
+      [["Felipe Massa","Massa"],["David Coulthard","Coulthard"],["Damon Hill"],["Nigel Mansell","Mansell"],["Jim Clark","Clark"]].forEach(a => p14.add(TIERS.EPIC, ...a));
+      [["Michele Alboreto","Alboreto"],["John Watson","Watson"],["Gunnar Nilsson","Nilsson"],["Dan Gurney","Gurney"]].forEach(a => p14.add(TIERS.ELITE, ...a));
+      p14.add(TIERS.GRAND_SLAM, "Pedro Rodriguez", "Rodriguez");
+      pool.push(p14);
+
+      // 15. Suzuka Winners
+      const p15 = new Prompt("Name a driver who has won at Suzuka (Japanese GP)", "suzuka");
+      [["Max Verstappen","Verstappen"],["Lewis Hamilton","Hamilton"],["Michael Schumacher","Schumacher"],["Sebastian Vettel","Vettel"],["Ayrton Senna","Senna"]].forEach(a => p15.add(TIERS.BASIC, ...a));
+      [["Valtteri Bottas","Bottas"],["Nico Rosberg","Rosberg"],["Fernando Alonso","Alonso"],["Jenson Button","Button"],["Kimi Raikkonen","Raikkonen"],["Mika Hakkinen","Hakkinen"]].forEach(a => p15.add(TIERS.RARE, ...a));
+      [["Damon Hill"],["Gerhard Berger","Berger"],["Rubens Barrichello","Barrichello"],["Nelson Piquet","Piquet"]].forEach(a => p15.add(TIERS.EPIC, ...a));
+      [["Alessandro Nannini","Nannini"],["Riccardo Patrese","Patrese"]].forEach(a => p15.add(TIERS.ELITE, ...a));
+      p15.add(TIERS.GRAND_SLAM, "Alessandro Nannini", "Nannini");
+      pool.push(p15);
+
+      // 16. Interlagos Winners
+      const p16 = new Prompt("Name a driver who has won at Interlagos (Brazilian GP)", "interlagos");
+      [["Max Verstappen","Verstappen"],["Lewis Hamilton","Hamilton"],["Ayrton Senna","Senna"],["Michael Schumacher","Schumacher"],["Sebastian Vettel","Vettel"],["George Russell","Russell"]].forEach(a => p16.add(TIERS.BASIC, ...a));
+      [["Felipe Massa","Massa"],["Nico Rosberg","Rosberg"],["Kimi Raikkonen","Raikkonen"],["Jenson Button","Button"],["Mark Webber","Webber"],["Alain Prost","Prost"]].forEach(a => p16.add(TIERS.RARE, ...a));
+      [["Juan Pablo Montoya","Montoya"],["David Coulthard","Coulthard"],["Mika Hakkinen","Hakkinen"],["Damon Hill"],["Jacques Villeneuve","Villeneuve"]].forEach(a => p16.add(TIERS.EPIC, ...a));
+      [["Giancarlo Fisichella","Fisichella"],["Nigel Mansell","Mansell"],["Emerson Fittipaldi","Fittipaldi"],["Carlos Reutemann","Reutemann"],["Rene Arnoux","Arnoux"]].forEach(a => p16.add(TIERS.ELITE, ...a));
+      p16.add(TIERS.GRAND_SLAM, "Carlos Pace", "Pace");
+      pool.push(p16);
+
+      // 17. Constructors' Champions
+      const p17 = new Prompt("Name a team that has won the F1 Constructors' Championship", null);
+      [["Ferrari","Scuderia Ferrari"],["Mercedes"],["Red Bull","Red Bull Racing"],["McLaren"],["Williams"]].forEach(a => p17.add(TIERS.BASIC, ...a));
+      [["Renault"],["Lotus"],["Brawn GP","Brawn"]].forEach(a => p17.add(TIERS.RARE, ...a));
+      [["Benetton"],["Tyrrell"],["Brabham"]].forEach(a => p17.add(TIERS.EPIC, ...a));
+      [["Cooper"],["BRM","British Racing Motors"],["Matra"]].forEach(a => p17.add(TIERS.ELITE, ...a));
+      p17.add(TIERS.GRAND_SLAM, "Vanwall");
+      pool.push(p17);
+
+      // 18. Famous F1 Corners
+      const p18 = new Prompt("Name a famous Formula 1 corner", null);
+      [["Eau Rouge"],["Raidillon"],["Parabolica"],["130R"],["Fairmont Hairpin","Grand Hotel Hairpin","Hairpin"]].forEach(a => p18.add(TIERS.BASIC, ...a));
+      [["Maggotts"],["Becketts"],["Copse"],["Tamburello"],["Wall of Champions"],["Senna S"]].forEach(a => p18.add(TIERS.RARE, ...a));
+      [["Pouhon"],["Blanchimont"],["Ascari"],["Lesmo"],["Spoon"],["Degner"],["La Rascasse","Rascasse"],["Tabac"],["Stowe"],["Abbey"]].forEach(a => p18.add(TIERS.EPIC, ...a));
+      [["Mirabeau"],["Portier"],["Sainte Devote","St Devote"],["Rivazza"],["Acque Minerali"],["Tarzan"],["Karussell"],["La Source"],["Bus Stop"],["Peraltada"]].forEach(a => p18.add(TIERS.ELITE, ...a));
+      p18.add(TIERS.GRAND_SLAM, "Scheivlak");
+      pool.push(p18);
 
       return pool;
     }
@@ -640,9 +745,13 @@
         { key: "mclaren",      url: "https://api.jolpi.ca/ergast/f1/constructors/mclaren/drivers.json?limit=100",  type: "drivers" },
         { key: "red_bull",     url: "https://api.jolpi.ca/ergast/f1/constructors/red_bull/drivers.json?limit=100", type: "drivers" },
         { key: "mercedes",     url: "https://api.jolpi.ca/ergast/f1/constructors/mercedes/drivers.json?limit=100", type: "drivers" },
+        { key: "williams",     url: "https://api.jolpi.ca/ergast/f1/constructors/williams/drivers.json?limit=100", type: "drivers" },
         { key: "monaco",       url: "https://api.jolpi.ca/ergast/f1/circuits/monaco/results/1.json?limit=100",     type: "raceWinners" },
         { key: "monza",        url: "https://api.jolpi.ca/ergast/f1/circuits/monza/results/1.json?limit=100",      type: "raceWinners" },
-        { key: "silverstone",  url: "https://api.jolpi.ca/ergast/f1/circuits/silverstone/results/1.json?limit=100",type: "raceWinners" }
+        { key: "silverstone",  url: "https://api.jolpi.ca/ergast/f1/circuits/silverstone/results/1.json?limit=100",type: "raceWinners" },
+        { key: "spa",          url: "https://api.jolpi.ca/ergast/f1/circuits/spa/results/1.json?limit=100",        type: "raceWinners" },
+        { key: "suzuka",       url: "https://api.jolpi.ca/ergast/f1/circuits/suzuka/results/1.json?limit=100",     type: "raceWinners" },
+        { key: "interlagos",   url: "https://api.jolpi.ca/ergast/f1/circuits/interlagos/results/1.json?limit=100", type: "raceWinners" }
       ];
 
       let added = 0;
@@ -655,32 +764,32 @@
             if (prompt) {
               if (job.type === "drivers") {
                 (json.MRData?.DriverTable?.Drivers || []).forEach(d => {
-                  if (prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
+                  if (prompt.addEliteIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
                 });
               } else if (job.type === "constructors") {
                 (json.MRData?.ConstructorTable?.Constructors || []).forEach(c => {
-                  if (prompt.addKrillionIfAbsent(c.name)) added++;
+                  if (prompt.addEliteIfAbsent(c.name)) added++;
                 });
               } else if (job.type === "circuits") {
                 (json.MRData?.CircuitTable?.Circuits || []).forEach(c => {
-                  if (prompt.addKrillionIfAbsent(c.circuitName, c.Location?.locality || "")) added++;
+                  if (prompt.addEliteIfAbsent(c.circuitName, c.Location?.locality || "")) added++;
                 });
               } else if (job.type === "countries") {
                 (json.MRData?.CircuitTable?.Circuits || []).forEach(c => {
-                  if (c.Location?.country && prompt.addKrillionIfAbsent(c.Location.country)) added++;
+                  if (c.Location?.country && prompt.addEliteIfAbsent(c.Location.country)) added++;
                 });
               } else if (job.type === "standings") {
                 (json.MRData?.StandingsTable?.StandingsLists || []).forEach(sl =>
                   (sl.DriverStandings || []).forEach(ds => {
                     const d = ds.Driver;
-                    if (d && prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
+                    if (d && prompt.addEliteIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
                   })
                 );
               } else if (job.type === "raceWinners") {
                 (json.MRData?.RaceTable?.Races || []).forEach(r =>
                   (r.Results || []).forEach(resItem => {
                     const d = resItem.Driver;
-                    if (d && prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
+                    if (d && prompt.addEliteIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
                   })
                 );
               }
@@ -701,7 +810,7 @@
     syncJolpicaApi();
 
     // --- Game State & UI Logic ---
-    let activePrompts = [], results = [], currentIndex = 0, totalLaps = 0, timeLeft = TIME_PER_PROMPT, timerId = null;
+    let activePrompts = [], results = [], currentIndex = 0, totalScore = 0, timeLeft = TIME_PER_PROMPT, timerId = null;
 
     const screens = {
       start: document.getElementById("start-screen"),
@@ -709,7 +818,7 @@
       summary: document.getElementById("summary-screen")
     };
     const progressLabel = document.getElementById("progress-label");
-    const lapsLabel = document.getElementById("laps-label");
+    const scoreLabel = document.getElementById("score-label");
     const timerLabel = document.getElementById("timer-label");
     const timerBarFill = document.getElementById("timer-bar-fill");
     const gaugeFill = document.getElementById("gauge-fill");
@@ -731,7 +840,7 @@
 
     function startGame() {
       currentIndex = 0;
-      totalLaps = 0;
+      totalScore = 0;
       results = [];
       activePrompts = [...promptPool].sort(() => Math.random() - 0.5).slice(0, QUESTIONS_PER_RACE);
       gaugeFill.style.height = "0%";
@@ -746,9 +855,9 @@
       }
 
       const current = activePrompts[currentIndex];
-      const maxLaps = activePrompts.length * MAX_LAPS;
+      const maxPts = activePrompts.length * MAX_POINTS_PER_PROMPT;
       progressLabel.textContent = `SECTOR ${currentIndex + 1} / ${activePrompts.length}`;
-      lapsLabel.textContent = `LAPS: ${totalLaps} / ${maxLaps}`;
+      scoreLabel.textContent = `PTS: ${totalScore} / ${maxPts}`;
       promptText.textContent = current.question;
       answerInput.value = "";
       answerInput.disabled = false;
@@ -814,21 +923,21 @@
       dymBtn.style.display = "none";
       answerInput.style.borderColor = match.color;
 
-      totalLaps += match.laps;
-      const maxLaps = activePrompts.length * MAX_LAPS;
-      lapsLabel.textContent = `LAPS: ${totalLaps} / ${maxLaps}`;
-      gaugeFill.style.height = `${Math.min(100, (totalLaps / maxLaps) * 100)}%`;
+      totalScore += match.pts;
+      const maxPts = activePrompts.length * MAX_POINTS_PER_PROMPT;
+      scoreLabel.textContent = `PTS: ${totalScore} / ${maxPts}`;
+      gaugeFill.style.height = `${Math.min(100, (totalScore / maxPts) * 100)}%`;
 
       feedbackEl.style.color = match.color;
       const fuzzyNote = wasFuzzy ? " • typo fixed" : "";
-      feedbackEl.textContent = `+${match.laps} LAPS  •  ${match.name} (${match.displayName}${fuzzyNote})`;
+      feedbackEl.textContent = `+${match.pts} PTS  •  ${match.name} (${match.displayName}${fuzzyNote})`;
       results.push({
         question: current.question,
         userAnswer: match.displayName,
         tier: match.name,
-        laps: match.laps,
+        pts: match.pts,
         color: match.color,
-        gem: current.sampleKrillion()
+        gem: current.grandSlamAnswer
       });
 
       setTimeout(() => { currentIndex++; loadPrompt(); }, 1500);
@@ -840,21 +949,21 @@
       dymBtn.style.display = "none";
       const current = activePrompts[currentIndex];
       feedbackEl.style.color = "#e10600";
-      feedbackEl.textContent = "DNF (TIME'S UP)  •  +0 LAPS";
+      feedbackEl.textContent = "DNF (TIME'S UP)  •  +0 PTS";
       results.push({
         question: current.question,
         userAnswer: "No Answer",
         tier: "DNF",
-        laps: 0,
+        pts: 0,
         color: "#e10600",
-        gem: current.sampleKrillion()
+        gem: current.grandSlamAnswer
       });
       setTimeout(() => { currentIndex++; loadPrompt(); }, 1500);
     }
 
     function showSummary() {
-      const maxLaps = activePrompts.length * MAX_LAPS;
-      document.getElementById("final-score").textContent = `TOTAL LAPS: ${totalLaps} / ${maxLaps}`;
+      const maxPts = activePrompts.length * MAX_POINTS_PER_PROMPT;
+      document.getElementById("final-score").textContent = `TOTAL SCORE: ${totalScore} / ${maxPts} PTS`;
       const listEl = document.getElementById("summary-list");
       listEl.innerHTML = "";
 
@@ -864,9 +973,9 @@
         row.innerHTML = `
           <div>
             <div class="summary-q">${r.question}</div>
-            <div class="summary-detail">Your pick: ${r.userAnswer} &nbsp;|&nbsp; Grand Slam gem: ${r.gem}</div>
+            <div class="summary-detail">Your pick: ${r.userAnswer} &nbsp;|&nbsp; Grand Slam: ${r.gem}</div>
           </div>
-          <div class="summary-score" style="color:${r.color}">+${r.laps} LAPS (${r.tier})</div>
+          <div class="summary-score" style="color:${r.color}">+${r.pts} PTS (${r.tier})</div>
         `;
         listEl.appendChild(row);
       }
