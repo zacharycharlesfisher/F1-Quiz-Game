@@ -546,7 +546,7 @@
       [["Ferrari","Scuderia Ferrari"],["Mercedes","Mercedes AMG"],["Red Bull","Red Bull Racing"],["McLaren"],["Williams"],["Aston Martin"],["Alpine"],["Haas"]].forEach(a => p2.add(TIERS.COMMON, ...a));
       [["Sauber","Kick Sauber"],["Renault"],["Lotus"],["Brawn GP","Brawn"],["Force India"],["Toro Rosso","AlphaTauri","Racing Bulls"],["Jordan"],["Benetton"]].forEach(a => p2.add(TIERS.UNCOMMON, ...a));
       [["Tyrrell"],["Brabham"],["Minardi"],["Arrows"],["Ligier"],["Jaguar"],["Toyota"]].forEach(a => p2.add(TIERS.RARE, ...a));
-      [["Andrea Moda"],["Super Aguri"],["Spyker"],["Simtek"]].forEach(a => p2.add(TIERS.KRILLION, ...a));
+      [["BRM","British Racing Motors"],["Cooper"],["Vanwall"],["Matra"],["Andrea Moda"],["Super Aguri"],["Spyker"],["Simtek"]].forEach(a => p2.add(TIERS.KRILLION, ...a));
       pool.push(p2);
 
       const p3 = new Prompt("Name a country that has hosted an F1 Grand Prix", "countries");
@@ -567,7 +567,7 @@
       [["Ferrari"],["Mercedes"],["Honda"],["Renault"],["Ford"]].forEach(a => p5.add(TIERS.COMMON, ...a));
       [["Cosworth"],["BMW"],["Toyota"],["Porsche"],["Audi"],["Red Bull Powertrains","RBPT"]].forEach(a => p5.add(TIERS.UNCOMMON, ...a));
       [["Yamaha"],["Peugeot"],["Judd"],["Ilmor"],["Lamborghini"],["Alfa Romeo"],["Mugen-Honda","Mugen"]].forEach(a => p5.add(TIERS.RARE, ...a));
-      [["Hart","Brian Hart"],["Megatron"],["Motori Moderni"],["Repco"],["Climax","Coventry Climax"],["Weslake"]].forEach(a => p5.add(TIERS.KRILLION, ...a));
+      [["Hart","Brian Hart"],["Megatron"],["Motori Moderni"],["Repco"],["Climax","Coventry Climax"],["Weslake"],["BRM"]].forEach(a => p5.add(TIERS.KRILLION, ...a));
       pool.push(p5);
 
       const p6 = new Prompt("Name a driver who has raced for Ferrari in F1", "ferrari");
@@ -622,61 +622,74 @@
       return pool;
     }
 
-    // --- Live Jolpica F1 API Sync ---
+    // --- Live Jolpica F1 API Sync (Rate-Limit Safe + Paginated) ---
     const promptPool = buildPromptPool();
 
     async function syncJolpicaApi() {
       const statusEl = document.getElementById("api-status");
-      const endpoints = {
-        champions:   { url: "https://api.jolpi.ca/ergast/f1/driverstandings/1.json?limit=100", type: "standings" },
-        constructors:{ url: "https://api.jolpi.ca/ergast/f1/constructors.json?limit=250", type: "constructors" },
-        circuits:    { url: "https://api.jolpi.ca/ergast/f1/circuits.json?limit=100", type: "circuits" },
-        countries:   { url: "https://api.jolpi.ca/ergast/f1/circuits.json?limit=100", type: "countries" },
-        monaco:      { url: "https://api.jolpi.ca/ergast/f1/circuits/monaco/results/1.json?limit=100", type: "raceWinners" },
-        monza:       { url: "https://api.jolpi.ca/ergast/f1/circuits/monza/results/1.json?limit=100", type: "raceWinners" },
-        silverstone: { url: "https://api.jolpi.ca/ergast/f1/circuits/silverstone/results/1.json?limit=100", type: "raceWinners" },
-        ferrari:     { url: "https://api.jolpi.ca/ergast/f1/constructors/ferrari/drivers.json?limit=150", type: "drivers" },
-        mclaren:     { url: "https://api.jolpi.ca/ergast/f1/constructors/mclaren/drivers.json?limit=150", type: "drivers" },
-        red_bull:    { url: "https://api.jolpi.ca/ergast/f1/constructors/red_bull/drivers.json?limit=100", type: "drivers" },
-        mercedes:    { url: "https://api.jolpi.ca/ergast/f1/constructors/mercedes/drivers.json?limit=100", type: "drivers" }
-      };
+      const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+      const jobs = [
+        { key: "constructors", url: "https://api.jolpi.ca/ergast/f1/constructors.json?limit=100&offset=0",   type: "constructors" },
+        { key: "constructors", url: "https://api.jolpi.ca/ergast/f1/constructors.json?limit=100&offset=100", type: "constructors" },
+        { key: "constructors", url: "https://api.jolpi.ca/ergast/f1/constructors.json?limit=100&offset=200", type: "constructors" },
+        { key: "circuits",     url: "https://api.jolpi.ca/ergast/f1/circuits.json?limit=100",                type: "circuits" },
+        { key: "countries",    url: "https://api.jolpi.ca/ergast/f1/circuits.json?limit=100",                type: "countries" },
+        { key: "champions",    url: "https://api.jolpi.ca/ergast/f1/driverstandings/1.json?limit=100",       type: "standings" },
+        { key: "ferrari",      url: "https://api.jolpi.ca/ergast/f1/constructors/ferrari/drivers.json?limit=100",  type: "drivers" },
+        { key: "mclaren",      url: "https://api.jolpi.ca/ergast/f1/constructors/mclaren/drivers.json?limit=100",  type: "drivers" },
+        { key: "red_bull",     url: "https://api.jolpi.ca/ergast/f1/constructors/red_bull/drivers.json?limit=100", type: "drivers" },
+        { key: "mercedes",     url: "https://api.jolpi.ca/ergast/f1/constructors/mercedes/drivers.json?limit=100", type: "drivers" },
+        { key: "monaco",       url: "https://api.jolpi.ca/ergast/f1/circuits/monaco/results/1.json?limit=100",     type: "raceWinners" },
+        { key: "monza",        url: "https://api.jolpi.ca/ergast/f1/circuits/monza/results/1.json?limit=100",      type: "raceWinners" },
+        { key: "silverstone",  url: "https://api.jolpi.ca/ergast/f1/circuits/silverstone/results/1.json?limit=100",type: "raceWinners" }
+      ];
 
       let added = 0;
-      await Promise.allSettled(Object.entries(endpoints).map(async ([key, cfg]) => {
+      for (const job of jobs) {
         try {
-          const res = await fetch(cfg.url);
-          if (!res.ok) return;
-          const json = await res.json();
-          const prompt = promptPool.find(p => p.apiKey === key);
-          if (!prompt) return;
-
-          if (cfg.type === "drivers") {
-            const list = json.MRData?.DriverTable?.Drivers || [];
-            list.forEach(d => { if (prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++; });
-          } else if (cfg.type === "constructors") {
-            const list = json.MRData?.ConstructorTable?.Constructors || [];
-            list.forEach(c => { if (prompt.addKrillionIfAbsent(c.name)) added++; });
-          } else if (cfg.type === "circuits") {
-            const list = json.MRData?.CircuitTable?.Circuits || [];
-            list.forEach(c => { if (prompt.addKrillionIfAbsent(c.circuitName, c.Location?.locality || "")) added++; });
-          } else if (cfg.type === "countries") {
-            const list = json.MRData?.CircuitTable?.Circuits || [];
-            list.forEach(c => { if (c.Location?.country && prompt.addKrillionIfAbsent(c.Location.country)) added++; });
-          } else if (cfg.type === "standings") {
-            const lists = json.MRData?.StandingsTable?.StandingsLists || [];
-            lists.forEach(sl => (sl.DriverStandings || []).forEach(ds => {
-              const d = ds.Driver;
-              if (d && prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
-            }));
-          } else if (cfg.type === "raceWinners") {
-            const races = json.MRData?.RaceTable?.Races || [];
-            races.forEach(r => (r.Results || []).forEach(resItem => {
-              const d = resItem.Driver;
-              if (d && prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
-            }));
+          const res = await fetch(job.url);
+          if (res.ok) {
+            const json = await res.json();
+            const prompt = promptPool.find(p => p.apiKey === job.key);
+            if (prompt) {
+              if (job.type === "drivers") {
+                (json.MRData?.DriverTable?.Drivers || []).forEach(d => {
+                  if (prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
+                });
+              } else if (job.type === "constructors") {
+                (json.MRData?.ConstructorTable?.Constructors || []).forEach(c => {
+                  if (prompt.addKrillionIfAbsent(c.name)) added++;
+                });
+              } else if (job.type === "circuits") {
+                (json.MRData?.CircuitTable?.Circuits || []).forEach(c => {
+                  if (prompt.addKrillionIfAbsent(c.circuitName, c.Location?.locality || "")) added++;
+                });
+              } else if (job.type === "countries") {
+                (json.MRData?.CircuitTable?.Circuits || []).forEach(c => {
+                  if (c.Location?.country && prompt.addKrillionIfAbsent(c.Location.country)) added++;
+                });
+              } else if (job.type === "standings") {
+                (json.MRData?.StandingsTable?.StandingsLists || []).forEach(sl =>
+                  (sl.DriverStandings || []).forEach(ds => {
+                    const d = ds.Driver;
+                    if (d && prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
+                  })
+                );
+              } else if (job.type === "raceWinners") {
+                (json.MRData?.RaceTable?.Races || []).forEach(r =>
+                  (r.Results || []).forEach(resItem => {
+                    const d = resItem.Driver;
+                    if (d && prompt.addKrillionIfAbsent(`${d.givenName} ${d.familyName}`, d.familyName)) added++;
+                  })
+                );
+              }
+            }
           }
         } catch (_) {}
-      }));
+        statusEl.textContent = `Syncing F1 history... (+${added} loaded)`;
+        await sleep(300);
+      }
 
       if (added > 0) {
         statusEl.style.color = "#22c55e";
