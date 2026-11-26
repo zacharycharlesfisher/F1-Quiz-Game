@@ -338,9 +338,9 @@
         <div class="title">F1 KRILLION</div>
         <div class="subtitle">LIGHTS OUT &amp; AWAY WE GO</div>
         <div class="desc">
-          <strong>7 random questions</strong> from Formula 1 history. <strong>25 seconds</strong> on the clock.<br>
-          Pick obvious answers for low points, or dig deep into for bigger scores.
-          Every prompt hides just <strong>one Grand Slam</strong> answer, find it to chase a perfect <strong>700-point score</strong>!
+          <strong>7 random sectors</strong> drawn from <strong>32 Formula 1 topics</strong>. <strong>25 seconds</strong> on the clock.<br>
+          Stay on the obvious racing line for low points, or dig deep into the paddock for bigger scores.
+          Every prompt hides just <strong>one Grand Slam</strong> answer—find it to chase a perfect <strong>700-point race</strong>.
 
           <div class="tier-legend">
             <span class="tier-pill" style="color: var(--tier-basic)">BASIC • 10</span>
@@ -350,7 +350,7 @@
             <span class="tier-pill" style="color: var(--tier-grand-slam)">GRAND SLAM • 100</span>
           </div>
 
-          <span class="muted">Wrong guesses don't end the round. Keep pushing until the clock runs dry.</span>
+          <span class="muted">Miss the apex? Wrong guesses don't end the round—keep pushing until the clock runs dry.</span>
         </div>
         <button id="start-btn" class="btn-primary">LIGHTS OUT</button>
         <div id="api-status" class="api-status">Syncing full F1 history from Jolpica API...</div>
@@ -506,7 +506,6 @@
         }
       }
 
-      // API-loaded deep cuts earn ELITE (85 pts) so the single Grand Slam stays 1-of-1
       addEliteIfAbsent(displayName, ...aliases) {
         const key = normalize(displayName);
         if (!key || this.lookup.has(key)) return false;
@@ -558,7 +557,7 @@
       }
     }
 
-    // --- 18-Question F1 Pool (Strictly 1 Grand Slam per prompt) ---
+    // --- 32-Topic F1 Pool (Strictly 1 Grand Slam per prompt) ---
     function buildPromptPool() {
       const pool = [];
 
@@ -693,7 +692,7 @@
       [["Max Verstappen","Verstappen"],["Lewis Hamilton","Hamilton"],["Michael Schumacher","Schumacher"],["Sebastian Vettel","Vettel"],["Ayrton Senna","Senna"]].forEach(a => p15.add(TIERS.BASIC, ...a));
       [["Valtteri Bottas","Bottas"],["Nico Rosberg","Rosberg"],["Fernando Alonso","Alonso"],["Jenson Button","Button"],["Kimi Raikkonen","Raikkonen"],["Mika Hakkinen","Hakkinen"]].forEach(a => p15.add(TIERS.RARE, ...a));
       [["Damon Hill"],["Gerhard Berger","Berger"],["Rubens Barrichello","Barrichello"],["Nelson Piquet","Piquet"]].forEach(a => p15.add(TIERS.EPIC, ...a));
-      [["Alessandro Nannini","Nannini"],["Riccardo Patrese","Patrese"]].forEach(a => p15.add(TIERS.ELITE, ...a));
+      [["Riccardo Patrese","Patrese"]].forEach(a => p15.add(TIERS.ELITE, ...a));
       p15.add(TIERS.GRAND_SLAM, "Alessandro Nannini", "Nannini");
       pool.push(p15);
 
@@ -724,6 +723,132 @@
       p18.add(TIERS.GRAND_SLAM, "Scheivlak");
       pool.push(p18);
 
+      // 19. British F1 Drivers
+      const p19 = new Prompt("Name a British Formula 1 driver", null);
+      [["Lewis Hamilton","Hamilton"],["Lando Norris","Norris"],["George Russell","Russell"],["Jenson Button","Button"],["Nigel Mansell","Mansell"]].forEach(a => p19.add(TIERS.BASIC, ...a));
+      [["Damon Hill"],["James Hunt","Hunt"],["Jackie Stewart","Stewart"],["Jim Clark","Clark"],["David Coulthard","Coulthard"],["Oliver Bearman","Bearman"]].forEach(a => p19.add(TIERS.RARE, ...a));
+      [["Graham Hill"],["Stirling Moss","Moss"],["Martin Brundle","Brundle"],["Eddie Irvine","Irvine"],["Johnny Herbert","Herbert"],["John Surtees","Surtees"],["Mike Hawthorn","Hawthorn"]].forEach(a => p19.add(TIERS.EPIC, ...a));
+      [["Paul di Resta","di Resta"],["Jolyon Palmer","Palmer"],["Anthony Davidson","Davidson"],["Derek Warwick","Warwick"],["John Watson","Watson"],["Max Chilton","Chilton"],["Will Stevens","Stevens"]].forEach(a => p19.add(TIERS.ELITE, ...a));
+      p19.add(TIERS.GRAND_SLAM, "Tony Brooks", "Brooks");
+      pool.push(p19);
+
+      // 20. Italian F1 Drivers
+      const p20 = new Prompt("Name an Italian Formula 1 driver", null);
+      [["Kimi Antonelli","Antonelli","Andrea Kimi Antonelli"],["Antonio Giovinazzi","Giovinazzi"],["Alberto Ascari","Ascari"],["Giuseppe Farina","Farina","Nino Farina"]].forEach(a => p20.add(TIERS.BASIC, ...a));
+      [["Giancarlo Fisichella","Fisichella"],["Jarno Trulli","Trulli"],["Riccardo Patrese","Patrese"],["Michele Alboreto","Alboreto"]].forEach(a => p20.add(TIERS.RARE, ...a));
+      [["Elio de Angelis","de Angelis"],["Alessandro Nannini","Nannini"],["Andrea de Cesaris","de Cesaris"],["Luca Badoer","Badoer"],["Vitantonio Liuzzi","Liuzzi"]].forEach(a => p20.add(TIERS.EPIC, ...a));
+      [["Ivan Capelli","Capelli"],["Vittorio Brambilla","Brambilla"],["Lorenzo Bandini","Bandini"],["Nicola Larini","Larini"],["Alex Zanardi","Zanardi"],["Pierluigi Martini","Martini"]].forEach(a => p20.add(TIERS.ELITE, ...a));
+      p20.add(TIERS.GRAND_SLAM, "Giancarlo Baghetti", "Baghetti");
+      pool.push(p20);
+
+      // 21. French F1 Drivers
+      const p21 = new Prompt("Name a French Formula 1 driver", null);
+      [["Alain Prost","Prost"],["Pierre Gasly","Gasly"],["Esteban Ocon","Ocon"],["Romain Grosjean","Grosjean"]].forEach(a => p21.add(TIERS.BASIC, ...a));
+      [["Jean Alesi","Alesi"],["Jules Bianchi","Bianchi"],["Isack Hadjar","Hadjar"],["Olivier Panis","Panis"]].forEach(a => p21.add(TIERS.RARE, ...a));
+      [["Didier Pironi","Pironi"],["Rene Arnoux","Arnoux"],["Jacques Laffite","Laffite"],["Francois Cevert","Cevert"],["Jean-Eric Vergne","Vergne"]].forEach(a => p21.add(TIERS.EPIC, ...a));
+      [["Patrick Depailler","Depailler"],["Patrick Tambay","Tambay"],["Jean-Pierre Jabouille","Jabouille"],["Jean-Pierre Beltoise","Beltoise"],["Maurice Trintignant","Trintignant"],["Sebastien Bourdais","Bourdais"]].forEach(a => p21.add(TIERS.ELITE, ...a));
+      p21.add(TIERS.GRAND_SLAM, "Philippe Alliot", "Alliot");
+      pool.push(p21);
+
+      // 22. German F1 Drivers
+      const p22 = new Prompt("Name a German Formula 1 driver", null);
+      [["Michael Schumacher","Schumacher"],["Sebastian Vettel","Vettel"],["Nico Rosberg","Rosberg"],["Nico Hulkenberg","Hulkenberg"],["Mick Schumacher"]].forEach(a => p22.add(TIERS.BASIC, ...a));
+      [["Ralf Schumacher"],["Nick Heidfeld","Heidfeld"],["Heinz-Harald Frentzen","Frentzen"],["Timo Glock","Glock"]].forEach(a => p22.add(TIERS.RARE, ...a));
+      [["Adrian Sutil","Sutil"],["Pascal Wehrlein","Wehrlein"],["Wolfgang von Trips","von Trips"],["Stefan Bellof","Bellof"]].forEach(a => p22.add(TIERS.EPIC, ...a));
+      [["Jochen Mass","Mass"],["Karl Kling","Kling"],["Hans Herrmann","Herrmann"],["Christian Danner","Danner"],["Marcus Winkelhock","Winkelhock"]].forEach(a => p22.add(TIERS.ELITE, ...a));
+      p22.add(TIERS.GRAND_SLAM, "Rolf Stommelen", "Stommelen");
+      pool.push(p22);
+
+      // 23. Brazilian F1 Drivers
+      const p23 = new Prompt("Name a Brazilian Formula 1 driver", null);
+      [["Ayrton Senna","Senna"],["Felipe Massa","Massa"],["Rubens Barrichello","Barrichello"],["Nelson Piquet","Piquet"],["Emerson Fittipaldi","Fittipaldi"]].forEach(a => p23.add(TIERS.BASIC, ...a));
+      [["Gabriel Bortoleto","Bortoleto"],["Bruno Senna"],["Felipe Nasr","Nasr"],["Pietro Fittipaldi"]].forEach(a => p23.add(TIERS.RARE, ...a));
+      [["Carlos Pace","Pace"],["Nelson Piquet Jr","Piquet Jr"],["Lucas di Grassi","di Grassi"],["Cristiano da Matta","da Matta"]].forEach(a => p23.add(TIERS.EPIC, ...a));
+      [["Antonio Pizzonia","Pizzonia"],["Ricardo Zonta","Zonta"],["Mauricio Gugelmin","Gugelmin"],["Roberto Moreno","Moreno"],["Pedro Diniz","Diniz"]].forEach(a => p23.add(TIERS.ELITE, ...a));
+      p23.add(TIERS.GRAND_SLAM, "Tarso Marques", "Marques");
+      pool.push(p23);
+
+      // 24. Race Winners Without a Championship
+      const p24 = new Prompt("Name an F1 race winner who never won a World Championship", null);
+      [["Charles Leclerc","Leclerc"],["Lando Norris","Norris"],["George Russell","Russell"],["Carlos Sainz","Sainz"],["Oscar Piastri","Piastri"],["Daniel Ricciardo","Ricciardo"]].forEach(a => p24.add(TIERS.BASIC, ...a));
+      [["Sergio Perez","Perez"],["Valtteri Bottas","Bottas"],["Felipe Massa","Massa"],["Rubens Barrichello","Barrichello"],["Mark Webber","Webber"],["David Coulthard","Coulthard"]].forEach(a => p24.add(TIERS.RARE, ...a));
+      [["Stirling Moss","Moss"],["Gilles Villeneuve","Villeneuve"],["Juan Pablo Montoya","Montoya"],["Pierre Gasly","Gasly"],["Esteban Ocon","Ocon"],["Robert Kubica","Kubica"],["Pastor Maldonado","Maldonado"]].forEach(a => p24.add(TIERS.EPIC, ...a));
+      [["Gerhard Berger","Berger"],["Jean Alesi","Alesi"],["Ralf Schumacher"],["Giancarlo Fisichella","Fisichella"],["Jarno Trulli","Trulli"],["Olivier Panis","Panis"],["Heikki Kovalainen","Kovalainen"],["Heinz-Harald Frentzen","Frentzen"]].forEach(a => p24.add(TIERS.ELITE, ...a));
+      p24.add(TIERS.GRAND_SLAM, "Vittorio Brambilla", "Brambilla");
+      pool.push(p24);
+
+      // 25. One-Time Race Winners
+      const p25 = new Prompt("Name a driver who has won ONLY ONE Formula 1 Grand Prix", null);
+      [["Pierre Gasly","Gasly"],["Esteban Ocon","Ocon"],["Robert Kubica","Kubica"],["Pastor Maldonado","Maldonado"]].forEach(a => p25.add(TIERS.BASIC, ...a));
+      [["Jean Alesi","Alesi"],["Jarno Trulli","Trulli"],["Heikki Kovalainen","Kovalainen"],["Olivier Panis","Panis"]].forEach(a => p25.add(TIERS.RARE, ...a));
+      [["Alessandro Nannini","Nannini"],["Francois Cevert","Cevert"],["Carlos Pace","Pace"],["Richie Ginther","Ginther"]].forEach(a => p25.add(TIERS.EPIC, ...a));
+      [["Peter Gethin","Gethin"],["Jean-Pierre Beltoise","Beltoise"],["Vittorio Brambilla","Brambilla"],["Gunnar Nilsson","Nilsson"],["Jochen Mass","Mass"],["Lorenzo Bandini","Bandini"]].forEach(a => p25.add(TIERS.ELITE, ...a));
+      p25.add(TIERS.GRAND_SLAM, "Innes Ireland", "Ireland");
+      pool.push(p25);
+
+      // 26. Renault / Alpine Drivers
+      const p26 = new Prompt("Name a driver who has raced for Renault or Alpine", "renault");
+      [["Fernando Alonso","Alonso"],["Pierre Gasly","Gasly"],["Esteban Ocon","Ocon"],["Daniel Ricciardo","Ricciardo"],["Carlos Sainz","Sainz"]].forEach(a => p26.add(TIERS.BASIC, ...a));
+      [["Alain Prost","Prost"],["Nico Hulkenberg","Hulkenberg"],["Jenson Button","Button"],["Robert Kubica","Kubica"],["Jack Doohan","Doohan"]].forEach(a => p26.add(TIERS.RARE, ...a));
+      [["Giancarlo Fisichella","Fisichella"],["Jarno Trulli","Trulli"],["Kevin Magnussen","Magnussen"],["Jolyon Palmer","Palmer"],["Heikki Kovalainen","Kovalainen"],["Romain Grosjean","Grosjean"]].forEach(a => p26.add(TIERS.EPIC, ...a));
+      [["Rene Arnoux","Arnoux"],["Jean-Pierre Jabouille","Jabouille"],["Vitaly Petrov","Petrov"],["Nelson Piquet Jr","Piquet Jr"],["Nick Heidfeld","Heidfeld"],["Bruno Senna"]].forEach(a => p26.add(TIERS.ELITE, ...a));
+      p26.add(TIERS.GRAND_SLAM, "Derek Warwick", "Warwick");
+      pool.push(p26);
+
+      // 27. Aston Martin / Racing Point / Force India Drivers
+      const p27 = new Prompt("Name a driver who raced for Aston Martin, Racing Point, or Force India", null);
+      [["Fernando Alonso","Alonso"],["Lance Stroll","Stroll"],["Sebastian Vettel","Vettel"],["Sergio Perez","Perez"]].forEach(a => p27.add(TIERS.BASIC, ...a));
+      [["Nico Hulkenberg","Hulkenberg"],["Esteban Ocon","Ocon"],["Adrian Sutil","Sutil"],["Paul di Resta","di Resta"]].forEach(a => p27.add(TIERS.RARE, ...a));
+      [["Giancarlo Fisichella","Fisichella"],["Vitantonio Liuzzi","Liuzzi"]].forEach(a => p27.add(TIERS.EPIC, ...a));
+      [["Roy Salvadori","Salvadori"],["Carroll Shelby","Shelby"]].forEach(a => p27.add(TIERS.ELITE, ...a));
+      p27.add(TIERS.GRAND_SLAM, "Maurice Trintignant", "Trintignant");
+      pool.push(p27);
+
+      // 28. Haas F1 Drivers
+      const p28 = new Prompt("Name a driver who has raced for Haas F1 Team", "haas");
+      [["Kevin Magnussen","Magnussen"],["Nico Hulkenberg","Hulkenberg"],["Romain Grosjean","Grosjean"],["Mick Schumacher"]].forEach(a => p28.add(TIERS.BASIC, ...a));
+      [["Esteban Ocon","Ocon"],["Oliver Bearman","Bearman"],["Nikita Mazepin","Mazepin"]].forEach(a => p28.add(TIERS.RARE, ...a));
+      [["Esteban Gutierrez","Gutierrez"]].forEach(a => p28.add(TIERS.EPIC, ...a));
+      [["Pietro Fittipaldi","Fittipaldi"]].forEach(a => p28.add(TIERS.ELITE, ...a));
+      p28.add(TIERS.GRAND_SLAM, "Pietro Fittipaldi", "Fittipaldi");
+      pool.push(p28);
+
+      // 29. Montreal (Canadian GP) Winners
+      const p29 = new Prompt("Name a driver who has won in Montreal (Canadian GP)", "villeneuve");
+      [["Lewis Hamilton","Hamilton"],["Max Verstappen","Verstappen"],["Michael Schumacher","Schumacher"],["Sebastian Vettel","Vettel"]].forEach(a => p29.add(TIERS.BASIC, ...a));
+      [["Daniel Ricciardo","Ricciardo"],["Jenson Button","Button"],["Fernando Alonso","Alonso"],["Ayrton Senna","Senna"],["Kimi Raikkonen","Raikkonen"]].forEach(a => p29.add(TIERS.RARE, ...a));
+      [["Robert Kubica","Kubica"],["Gilles Villeneuve","Villeneuve"],["Nelson Piquet","Piquet"],["Nigel Mansell","Mansell"],["Alain Prost","Prost"]].forEach(a => p29.add(TIERS.EPIC, ...a));
+      [["Jean Alesi","Alesi"],["Ralf Schumacher"],["Damon Hill"],["Gerhard Berger","Berger"],["Thierry Boutsen","Boutsen"],["Michele Alboreto","Alboreto"]].forEach(a => p29.add(TIERS.ELITE, ...a));
+      p29.add(TIERS.GRAND_SLAM, "Thierry Boutsen", "Boutsen");
+      pool.push(p29);
+
+      // 30. Albert Park (Australian GP) Winners
+      const p30 = new Prompt("Name a driver who has won at Albert Park (Australian GP)", "albert_park");
+      [["Max Verstappen","Verstappen"],["Lewis Hamilton","Hamilton"],["Charles Leclerc","Leclerc"],["Carlos Sainz","Sainz"],["Sebastian Vettel","Vettel"],["Michael Schumacher","Schumacher"]].forEach(a => p30.add(TIERS.BASIC, ...a));
+      [["Valtteri Bottas","Bottas"],["Nico Rosberg","Rosberg"],["Jenson Button","Button"],["Kimi Raikkonen","Raikkonen"],["Fernando Alonso","Alonso"]].forEach(a => p30.add(TIERS.RARE, ...a));
+      [["David Coulthard","Coulthard"],["Mika Hakkinen","Hakkinen"],["Damon Hill"],["Giancarlo Fisichella","Fisichella"]].forEach(a => p30.add(TIERS.EPIC, ...a));
+      [["Eddie Irvine","Irvine"]].forEach(a => p30.add(TIERS.ELITE, ...a));
+      p30.add(TIERS.GRAND_SLAM, "Eddie Irvine", "Irvine");
+      pool.push(p30);
+
+      // 31. F1 Team Principals
+      const p31 = new Prompt("Name an F1 Team Principal (past or present)", null);
+      [["Toto Wolff","Wolff"],["Christian Horner","Horner"],["Fred Vasseur","Frederic Vasseur","Vasseur"],["Zak Brown"],["Guenther Steiner","Steiner"]].forEach(a => p31.add(TIERS.BASIC, ...a));
+      [["Andrea Stella","Stella"],["James Vowles","Vowles"],["Mattia Binotto","Binotto"],["Ross Brawn","Brawn"],["Jean Todt","Todt"],["Ayao Komatsu","Komatsu"]].forEach(a => p31.add(TIERS.RARE, ...a));
+      [["Frank Williams"],["Ron Dennis","Dennis"],["Flavio Briatore","Briatore"],["Claire Williams"],["Otmar Szafnauer","Szafnauer"],["Mike Krack","Krack"],["Laurent Mekies","Mekies"],["Franz Tost","Tost"]].forEach(a => p31.add(TIERS.EPIC, ...a));
+      [["Colin Chapman","Chapman"],["Ken Tyrrell","Tyrrell"],["Eddie Jordan","Jordan"],["Peter Sauber","Sauber"],["Cyril Abiteboul","Abiteboul"],["Maurizio Arrivabene","Arrivabene"],["Stefano Domenicali","Domenicali"],["Eric Boullier","Boullier"]].forEach(a => p31.add(TIERS.ELITE, ...a));
+      p31.add(TIERS.GRAND_SLAM, "Paul Stoddart", "Stoddart");
+      pool.push(p31);
+
+      // 32. F1 Tire Suppliers
+      const p32 = new Prompt("Name a past or present F1 Tire Supplier", null);
+      [["Pirelli"],["Bridgestone"],["Michelin"],["Goodyear"]].forEach(a => p32.add(TIERS.BASIC, ...a));
+      [["Dunlop"],["Firestone"]].forEach(a => p32.add(TIERS.RARE, ...a));
+      [["Continental"]].forEach(a => p32.add(TIERS.EPIC, ...a));
+      [["Avon"],["Englebert"]].forEach(a => p32.add(TIERS.ELITE, ...a));
+      p32.add(TIERS.GRAND_SLAM, "Englebert");
+      pool.push(p32);
+
       return pool;
     }
 
@@ -746,12 +871,16 @@
         { key: "red_bull",     url: "https://api.jolpi.ca/ergast/f1/constructors/red_bull/drivers.json?limit=100", type: "drivers" },
         { key: "mercedes",     url: "https://api.jolpi.ca/ergast/f1/constructors/mercedes/drivers.json?limit=100", type: "drivers" },
         { key: "williams",     url: "https://api.jolpi.ca/ergast/f1/constructors/williams/drivers.json?limit=100", type: "drivers" },
+        { key: "renault",      url: "https://api.jolpi.ca/ergast/f1/constructors/renault/drivers.json?limit=100",  type: "drivers" },
+        { key: "haas",         url: "https://api.jolpi.ca/ergast/f1/constructors/haas/drivers.json?limit=100",     type: "drivers" },
         { key: "monaco",       url: "https://api.jolpi.ca/ergast/f1/circuits/monaco/results/1.json?limit=100",     type: "raceWinners" },
         { key: "monza",        url: "https://api.jolpi.ca/ergast/f1/circuits/monza/results/1.json?limit=100",      type: "raceWinners" },
         { key: "silverstone",  url: "https://api.jolpi.ca/ergast/f1/circuits/silverstone/results/1.json?limit=100",type: "raceWinners" },
         { key: "spa",          url: "https://api.jolpi.ca/ergast/f1/circuits/spa/results/1.json?limit=100",        type: "raceWinners" },
         { key: "suzuka",       url: "https://api.jolpi.ca/ergast/f1/circuits/suzuka/results/1.json?limit=100",     type: "raceWinners" },
-        { key: "interlagos",   url: "https://api.jolpi.ca/ergast/f1/circuits/interlagos/results/1.json?limit=100", type: "raceWinners" }
+        { key: "interlagos",   url: "https://api.jolpi.ca/ergast/f1/circuits/interlagos/results/1.json?limit=100", type: "raceWinners" },
+        { key: "villeneuve",   url: "https://api.jolpi.ca/ergast/f1/circuits/villeneuve/results/1.json?limit=100", type: "raceWinners" },
+        { key: "albert_park",  url: "https://api.jolpi.ca/ergast/f1/circuits/albert_park/results/1.json?limit=100",type: "raceWinners" }
       ];
 
       let added = 0;
